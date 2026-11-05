@@ -2,8 +2,7 @@
   <div class="HomeContainer">
     <HomeSideBar />
     <div class="homeRight">
-      <HomeHeader />
-      <div class="homeRouterContainer pt-2">
+      <div class="homeRouterContainer">
         <RouterView v-slot="{ Component }">
           <keep-alive :include="openedMenus">
             <component :is="Component"></component>
@@ -17,16 +16,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import { store } from '@/store'
-import HomeHeader from './homeHeader.vue'
 import HomeSideBar from './homeSideBar.vue'
 
 const openedMenus = computed(() => store.getters['system/openedMenus'])
 </script>
 
 <style scoped lang="less">
-@headerHeight: 72px;
 @sideBarWidth: 272px;
-@sideBarTitleHeight: 80px;
 
 .HomeContainer {
   width: 100vw;
@@ -36,11 +32,12 @@ const openedMenus = computed(() => store.getters['system/openedMenus'])
 
   .homeRight {
     width: calc(100% - @sideBarWidth);
-    padding: 0 3.5%;
+    height: 100%;
+    overflow: auto;
     background: #f5f3ef;
 
     .homeRouterContainer {
-      height: calc(100% - @headerHeight);
+      min-height: 100%;
       box-sizing: border-box;
     }
   }
