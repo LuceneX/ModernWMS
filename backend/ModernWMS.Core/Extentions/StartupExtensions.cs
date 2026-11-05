@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Caching.Memory;
@@ -90,6 +91,10 @@ namespace ModernWMS.Core.Extentions
             services.RegisterAssembly();
             services.AddControllers(c =>
             {
+                // Require authentication for every API action by default.
+                // Login, refresh, and explicitly anonymous account actions
+                // opt out with [AllowAnonymous].
+                c.Filters.Add(new AuthorizeFilter());
                 c.Filters.Add(typeof(ViewModelActionFiter));
                 c.MaxModelValidationErrors = 99999;
             }).ConfigureApiBehaviorOptions(o =>

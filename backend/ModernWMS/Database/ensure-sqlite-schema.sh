@@ -124,6 +124,7 @@ COMMIT;
 SQL
 
 add_column rolemenu menu_actions_authority "TEXT NOT NULL DEFAULT '[]'"
+add_column menu menu_actions "TEXT NOT NULL DEFAULT '[]'"
 add_column asn asnmaster_id "INTEGER NOT NULL DEFAULT 0"
 add_column asn arrival_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column asn unload_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
@@ -178,5 +179,39 @@ for table in "${expected_tables[@]}"; do
     exit 1
   fi
 done
+
+# The stock distribution creates the admin role with every menu, but older
+# SQLite snapshots can contain empty action lists. That leaves the UI readable
+# while disabling every save/edit/delete/confirm control. Keep the repair
+# idempotent and scope it to the built-in admin role only; custom roles remain
+# under administrator control in the role-menu screen.
+sqlite3 "$DB_PATH" <<'SQL'
+UPDATE rolemenu
+SET menu_actions_authority = CASE (
+  SELECT menu_name FROM menu WHERE menu.id = rolemenu.menu_id
+)
+  WHEN 'companySetting' THEN '["save","delete","export"]'
+  WHEN 'userRoleSetting' THEN '["save","delete","export"]'
+  WHEN 'userManagement' THEN '["save","delete","import","export","resetPwd"]'
+  WHEN 'commodityCategorySetting' THEN '["save","delete","export"]'
+  WHEN 'commodityManagement' THEN '["save","delete","export","saftyStock","printQrCode","printBarCode"]'
+  WHEN 'supplier' THEN '["save","delete","import","export"]'
+  WHEN 'print' THEN '["save","delete","export"]'
+  WHEN 'warehouseSetting' THEN '["warehouse-save","warehouse-delete","warehouse-import","warehouse-export","area-save","area-delete","area-export","location-save","location-delete","location-export","location-printBarCode","location-printQrCode"]'
+  WHEN 'ownerOfCargo' THEN '["save","delete","import","export"]'
+  WHEN 'freightSetting' THEN '["save","delete","import","export"]'
+  WHEN 'customer' THEN '["save","delete","import","export"]'
+  WHEN 'stockAsn' THEN '["notice-save","notice-delete","notice-export","notice-printQrCode","putOnTheShelf-printQrCode","delivered-confirm","delivered-export","unloaded-confirm","unloaded-delete","unloaded-export","sorted-editCount","sorted-confirm","sorted-delete","sorted-export","putOnTheShelf-editArrival","putOnTheShelf-delete","putOnTheShelf-export","detail-export"]'
+  WHEN 'stockManagement' THEN '["area-export","stock-export"]'
+  WHEN 'warehouseProcessing' THEN '["split","group","confirmOpeartion","confirmAdjust","delete","export"]'
+  WHEN 'warehouseMove' THEN '["save","delete","export","confirm"]'
+  WHEN 'warehouseFreeze' THEN '["freeze","unfreeze","export"]'
+  WHEN 'warehouseAdjust' THEN '["export"]'
+  WHEN 'warehouseTaking' THEN '["save","delete","export","confirmOpeartion","confirmAdjust"]'
+  WHEN 'deliveryManagement' THEN '["invoice-save","invoice-confirm","invoice-revoke","invoice-delete","invoice-export","invoice-printQrCode","picked-confirm","picked-revoke","picked-export","packaged-package","packaged-export","packaged-revoke","weighed-weigh","weighed-export","weighed-revoke","delivered-delivery","delivered-setCarrier","delivered-signIn","delivered-export","signedIn-export"]'
+  ELSE menu_actions_authority
+END
+WHERE userrole_id IN (SELECT id FROM userrole WHERE role_name = 'admin');
+SQL
 
 echo "SQLite schema reconciled: $DB_PATH"

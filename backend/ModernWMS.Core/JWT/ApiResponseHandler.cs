@@ -10,6 +10,7 @@ using ModernWMS.Core.Models;
 using System.Linq;
 using ModernWMS.Core.Utility;
 using ModernWMS.Core.JWT;
+using System.Security.Claims;
 namespace ModernWMS.Core.JWT
 {
     /// <summary>
@@ -51,13 +52,21 @@ namespace ModernWMS.Core.JWT
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var token = Request.Headers["Authorization"].ObjToString().Replace("Bearer ", "");
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return AuthenticateResult.NoResult();
+            }
+
             var currentUser = this._tokenManager.GetCurrentUser(token);
-            var flag =  _cacheManager.Is_Token_Exist<string>(currentUser.user_id, "WebToken", _tokenManager.GetRefreshTokenExpireMinute());
-            if (!flag)
+            if (currentUser == null || currentUser.user_id <= 0)
             {
                 return AuthenticateResult.Fail("Sorry, you don't have the authority required!");
             }
-                throw new NotImplementedException();
+
+            var identity = new ClaimsIdentity(Scheme.Name);
+            identity.AddClaim(new Claim(ClaimValueTypes.Json, JsonHelper.SerializeObject(currentUser), ClaimValueTypes.Json));
+            var principal = new ClaimsPrincipal(identity);
+            return AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name));
         }
         /// <summary>
         /// authentication
