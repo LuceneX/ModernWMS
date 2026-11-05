@@ -3,10 +3,12 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import { store } from '@/store'
 import { CustomerRouterProps } from '@/types/System/Router'
 import { menusToRouter } from '@/utils/router'
+import { getUserAuthority } from '@/api/base/roleMenu'
 
 // array => dynamic router
 let dynamicRouter: CustomerRouterProps[] = []
 let loadedRouter: string[] = []
+let authorityRoleId = 0
 
 // default router
 const routes: RouteRecordRaw[] = [
@@ -103,8 +105,28 @@ function loadRouter() {
   }
 }
 
+// Vuex persistence can restore an authority list from an earlier session.
+// Refresh it before rebuilding routes so permission repairs and role changes
+// take effect without requiring the operator to clear browser storage.
+async function refreshAuthority() {
+  const userInfo = store.getters['user/userInfo']
+  const roleId = Number(userInfo?.userrole_id || 0)
+  if (!roleId || authorityRoleId === roleId) {
+    return true
+  }
+
+  const { data: response } = await getUserAuthority(roleId)
+  if (!response.isSuccess || !Array.isArray(response.data) || response.data.length === 0) {
+    return false
+  }
+
+  store.commit('user/setUserMenuList', response.data)
+  authorityRoleId = roleId
+  return true
+}
+
 // Set the front routing guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // join system
   if (to.path === '/login') {
     dynamicRouter = []
@@ -119,6 +141,10 @@ router.beforeEach((to, from, next) => {
   }
 
   if (dynamicRouter.length === 0) {
+    if (!(await refreshAuthority())) {
+      store.commit('user/setToken', '')
+      return next('/login')
+    }
     loadRouter()
     return next(to.path)
   }
