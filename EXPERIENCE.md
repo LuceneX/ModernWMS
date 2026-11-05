@@ -136,6 +136,7 @@ Climax: legal information is discoverable without mixing credits into the authen
 
 - The bundled SQLite database is `backend/ModernWMS/wms.db`.
 - The local profile is intentionally SQLite (`backend/ModernWMS/appsettings.json` → `Database.db: SqlLite`) so a local run does not silently depend on an unavailable MySQL server.
+- Before the first backend launch, or after pulling schema changes, run `cd backend/ModernWMS && ./Database/ensure-sqlite-schema.sh`. The script is idempotent and only adds missing compatibility tables/columns.
 - The code expects `rolemenu.menu_actions_authority`; the local database must contain that column with a default JSON value of `[]`.
 - The compatibility database repair includes `action_log`, `asnmaster`, `asn.asnmaster_id`, stock traceability/price fields, and the expiry/series fields used by delivery and stock queries. Keep the committed database and backend entity model together; do not replace `wms.db` with an older dump.
 - The backend must be started from the backend project so the relative SQLite path resolves correctly.
