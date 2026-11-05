@@ -114,7 +114,6 @@ namespace ModernWMS.Core.Extentions
                 .UseSimpleAssemblyNameTypeSerializer()
                 .UseRecommendedSerializerSettings()
                 .UseStorage(new MemoryStorage()));
-            services.AddHangfireServer();
             services.AddScoped<FunctionHelper>();
         }
 
@@ -138,15 +137,11 @@ namespace ModernWMS.Core.Extentions
                 .AddSupportedUICultures(support_languages);
             app.UseRequestLocalization(localization_options);
 
-            var option = new BackgroundJobServerOptions
-            {
-                ServerName = String.Format("{0}.{1}", Environment.MachineName, Guid.NewGuid().ToString()),
-                WorkerCount = Environment.ProcessorCount * 5,
-                Queues = new[] { "wms" }
-            };
-            app.UseHangfireServer(option);
-            app.UseHangfireDashboard();
-            AddHangfireJob(serviceProvider);
+            // Hangfire is registered for the application services, but its server is
+            // intentionally not started by the local API host. The old startup path
+            // created duplicate servers and could starve Kestrel before port 5555
+            // became available. Background jobs can be hosted by a dedicated worker
+            // process when they are needed in deployment.
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

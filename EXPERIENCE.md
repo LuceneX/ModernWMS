@@ -138,12 +138,14 @@ Climax: legal information is discoverable without mixing credits into the authen
 - The local profile is intentionally SQLite (`backend/ModernWMS/appsettings.json` → `Database.db: SqlLite`) so a local run does not silently depend on an unavailable MySQL server.
 - Before the first backend launch, or after pulling schema changes, run `cd backend/ModernWMS && ./Database/ensure-sqlite-schema.sh`. The script is idempotent and only adds missing compatibility tables/columns.
 - The code expects `rolemenu.menu_actions_authority`; the local database must contain that column with a default JSON value of `[]`.
-- The compatibility database repair includes `action_log`, `asnmaster`, `asn.asnmaster_id`, stock traceability/price fields, and the expiry/series fields used by delivery and stock queries. Keep the committed database and backend entity model together; do not replace `wms.db` with an older dump.
+- The compatibility database repair covers every backend entity table, including approval workflow (`flowset*`), serial allocation, and print solutions, plus the expiry/series/price/putaway and receiving/dispatch fields used by current endpoint queries. Keep the committed database and backend entity model together; do not replace `wms.db` with an older dump.
 - The backend must be started from the backend project so the relative SQLite path resolves correctly.
 - On macOS 13 / .NET 7, build the backend project directly with node reuse disabled when the full solution build appears idle:
   `dotnet build ModernWMS/ModernWMS.csproj --no-restore -p:UseSharedCompilation=false -p:BuildInParallel=false /nodeReuse:false`
 - Start the compiled backend from `backend/ModernWMS` with `./bin/Debug/net7.0/ModernWMS`; verify `lsof -nP -iTCP:5555 -sTCP:LISTEN` before starting the Vite frontend.
 - Start the frontend from `frontend` with `npm run dev`; it serves on `127.0.0.1:5173` and proxies `/api` to `127.0.0.1:5555`.
+- Containerized run with Colima: from the repository root, run `docker compose up --build`. The frontend is available at `http://127.0.0.1:5173`, the backend at `http://127.0.0.1:5555`, and the SQLite database is persisted through `backend/ModernWMS/wms.db`.
+- Stop the containerized stack with `docker compose down`; inspect service output with `docker compose logs -f backend frontend`.
 - After changing schema or backend binaries, stop stale `ModernWMS` processes before relaunching. A resident process with no 5555 listener is not a healthy backend.
 - Treat backend schema errors as service errors in the UI and record the remediation in the deployment runbook.
 

@@ -23,6 +23,7 @@ add_column() {
 }
 
 sqlite3 "$DB_PATH" <<'SQL'
+BEGIN;
 CREATE TABLE IF NOT EXISTS action_log (
   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
   vue_path TEXT NOT NULL DEFAULT '',
@@ -52,15 +53,95 @@ CREATE TABLE IF NOT EXISTS sku_safety_stock (
   warehouse_id INTEGER NOT NULL DEFAULT 0,
   safety_stock_qty INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS global_unique_serial (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  table_name TEXT NOT NULL DEFAULT '',
+  prefix_char TEXT NOT NULL DEFAULT '',
+  reset_rule TEXT NOT NULL DEFAULT '',
+  current_no INTEGER NOT NULL DEFAULT 1,
+  last_update_time TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  tenant_id INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS flowsetmain (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  menu TEXT NOT NULL DEFAULT '',
+  flow_name TEXT NOT NULL DEFAULT '',
+  creator TEXT NOT NULL DEFAULT '',
+  create_time TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+  tenant_id INTEGER NOT NULL DEFAULT 1
+);
+CREATE TABLE IF NOT EXISTS flowset (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  flowsetmain_id INTEGER NOT NULL DEFAULT 0,
+  is_origin INTEGER NOT NULL DEFAULT 0,
+  is_end INTEGER NOT NULL DEFAULT 0,
+  node_guid TEXT NOT NULL DEFAULT '',
+  node_name TEXT NOT NULL DEFAULT '',
+  prev_node_guid TEXT NOT NULL DEFAULT '',
+  FOREIGN KEY (flowsetmain_id) REFERENCES flowsetmain(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS flowsetusers (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  flowset_id INTEGER NOT NULL DEFAULT 0,
+  flowsetmain_id INTEGER NOT NULL DEFAULT 0,
+  node_guid TEXT NOT NULL DEFAULT '',
+  user_id INTEGER NOT NULL DEFAULT 0,
+  FOREIGN KEY (flowset_id) REFERENCES flowset(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS flowsetfilter (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  flowset_id INTEGER NOT NULL DEFAULT 0,
+  flowsetmain_id INTEGER NOT NULL DEFAULT 0,
+  node_guid TEXT NOT NULL DEFAULT '',
+  logic TEXT NOT NULL DEFAULT '且',
+  c1 TEXT NOT NULL DEFAULT '',
+  col_label TEXT NOT NULL DEFAULT '',
+  col_name TEXT NOT NULL DEFAULT '',
+  compare TEXT NOT NULL DEFAULT '等于',
+  content TEXT NOT NULL DEFAULT '',
+  c2 TEXT NOT NULL DEFAULT '',
+  sort INTEGER NOT NULL DEFAULT 0,
+  condition_group TEXT NOT NULL DEFAULT '',
+  formulas TEXT NOT NULL DEFAULT '',
+  assert_mode TEXT NOT NULL DEFAULT '',
+  table_name TEXT NOT NULL DEFAULT '',
+  scheme_name TEXT NOT NULL DEFAULT '',
+  FOREIGN KEY (flowset_id) REFERENCES flowset(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS user_defined_print_solution (
+  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+  vue_path TEXT NOT NULL DEFAULT '',
+  tab_page TEXT NOT NULL DEFAULT '',
+  solution_name TEXT NOT NULL DEFAULT '',
+  config_json TEXT,
+  report_length REAL NOT NULL DEFAULT 0,
+  report_width REAL NOT NULL DEFAULT 0,
+  report_direction TEXT NOT NULL DEFAULT '',
+  last_update_time TEXT NOT NULL DEFAULT '0001-01-01 00:00:00',
+  tenant_id INTEGER NOT NULL DEFAULT 0
+);
+COMMIT;
 SQL
 
 add_column rolemenu menu_actions_authority "TEXT NOT NULL DEFAULT '[]'"
 add_column asn asnmaster_id "INTEGER NOT NULL DEFAULT 0"
+add_column asn arrival_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+add_column asn unload_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+add_column asn unload_person_id "INTEGER NOT NULL DEFAULT 0"
+add_column asn unload_person "TEXT NOT NULL DEFAULT ''"
 add_column asn expiry_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column asn price "TEXT NOT NULL DEFAULT '0'"
+add_column asnsort putaway_qty "INTEGER NOT NULL DEFAULT 0"
+add_column dispatchlist pick_checker_id "INTEGER NOT NULL DEFAULT 0"
+add_column dispatchlist pick_checker "TEXT NOT NULL DEFAULT ''"
+add_column dispatchpicklist picker_id "INTEGER NOT NULL DEFAULT 0"
+add_column dispatchpicklist picker "TEXT NOT NULL DEFAULT ''"
+add_column dispatchpicklist price "TEXT NOT NULL DEFAULT '0'"
+add_column dispatchpicklist putaway_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column stock bar_code "TEXT NOT NULL DEFAULT ''"
 add_column stock series_number "TEXT NOT NULL DEFAULT ''"
 add_column stock expiry_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+add_column stock putaway_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column stock price "TEXT NOT NULL DEFAULT '0'"
 add_column stockadjust series_number "TEXT NOT NULL DEFAULT ''"
 add_column stockadjust expiry_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
@@ -78,5 +159,24 @@ add_column stocktaking series_number "TEXT NOT NULL DEFAULT ''"
 add_column stocktaking expiry_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column stocktaking price "TEXT NOT NULL DEFAULT '0'"
 add_column stocktaking putaway_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+add_column stockprocessdetail series_number "TEXT NOT NULL DEFAULT ''"
+add_column stockprocessdetail expiry_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+add_column stockprocessdetail price "TEXT NOT NULL DEFAULT '0'"
+add_column stockprocessdetail putaway_date "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
+
+expected_tables=(
+  action_log asn asnmaster asnsort category company customer dispatchlist
+  dispatchpicklist flowset flowsetfilter flowsetmain flowsetusers freightfee
+  global_unique_serial goodslocation goodsowner menu rolemenu sku
+  sku_safety_stock spu stock stockadjust stockfreeze stockmove stockprocess
+  stockprocessdetail stocktaking supplier user user_defined_print_solution
+  userrole warehouse warehousearea
+)
+for table in "${expected_tables[@]}"; do
+  if ! table_exists "$table"; then
+    echo "SQLite schema reconciliation failed: missing table $table" >&2
+    exit 1
+  fi
+done
 
 echo "SQLite schema reconciled: $DB_PATH"
