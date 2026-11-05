@@ -1,7 +1,9 @@
 <template>
   <div class="loginForm">
     <div class="titleText">
+      <div class="eyebrow">LUCENEX / OPERATIONS</div>
       <h5>{{ $t('login.welcomeTitle') }}</h5>
+      <p class="formIntro">Sign in to keep your warehouse moving with fewer exceptions.</p>
     </div>
     <div class="formContainer">
       <v-form ref="VFormRef" v-model="data.valid" lazy-validation @keydown.enter.prevent="method.login()">
@@ -18,7 +20,7 @@
           @click:append-inner="method.handleShowPassword()"
         ></v-text-field>
         <v-checkbox v-model="data.remember" :label="$t('login.rememberTips')"></v-checkbox>
-        <v-btn color="purple" class="loginBtn" @click="method.login()">{{ $t('login.mainButtonLabel') }}</v-btn>
+        <v-btn color="primary" class="loginBtn" :loading="data.submitting" :disabled="data.submitting" @click="method.login()">{{ data.submitting ? (store.getters['system/language'] === 'lv' ? 'Notiek pieteikšanās…' : 'Signing in…') : $t('login.mainButtonLabel') }}</v-btn>
         <!-- <v-btn class="mt-2" color="#666" variant="plain" @click="method.openRegisterDialog">
           {{ i18n.global.t('login.registerTips') }}
         </v-btn> -->
@@ -61,6 +63,7 @@ const data = reactive({
   userName: 'admin', // 240507 刘福: 默认账号 admin 1
   password: '1',
   remember: false,
+  submitting: false,
   dialogForm: {
     id: 0,
     user_num: '',
@@ -72,7 +75,7 @@ const data = reactive({
   },
   userNameVaildRules: [(v: string) => !!v || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('login.userName') }!`],
   passwordVaildRules: [(v: string) => !!v || `${ i18n.global.t('system.checkText.mustInput') }${ i18n.global.t('login.password') }!`],
-  encryption: 'ModernWMS2024'
+  encryption: 'LuceneX2024'
 })
 
 const method = reactive({
@@ -80,16 +83,19 @@ const method = reactive({
     data.showPassword = !data.showPassword
   },
   login: async () => {
+    if (data.submitting) return
     const { valid } = await VFormRef.value.validate()
     if (!valid) {
       return
     }
-    const { data: loginRes } = await login({
-      user_name: data.userName,
-      password: Md5.hashStr(data.password)
-    })
+    data.submitting = true
+    try {
+      const { data: loginRes } = await login({
+        user_name: data.userName,
+        password: Md5.hashStr(data.password)
+      })
 
-    if (loginRes.isSuccess) {
+      if (loginRes.isSuccess) {
       const expiredTime = new Date().getTime() + loginRes.data.expire * 60 * 1000
 
       store.commit('user/setToken', loginRes.data.access_token)
@@ -102,7 +108,7 @@ const method = reactive({
       if (!authorityRes.isSuccess) {
         hookComponent.$message({
           type: 'error',
-          content: authorityRes.errorMessage
+          content: i18n.global.t('login.notAuthority')
         })
         return
       }
@@ -148,11 +154,14 @@ const method = reactive({
       // Jump home
       store.commit('system/setCurrentRouterPath', 'homepage')
       router.push('home')
-    } else {
-      hookComponent.$message({
-        type: 'error',
-        content: loginRes.errorMessage
-      })
+      } else {
+        hookComponent.$message({
+          type: 'error',
+          content: i18n.global.t('login.invalidCredentials')
+        })
+      }
+    } finally {
+      data.submitting = false
     }
   },
   openRegisterDialog: () => {
@@ -224,10 +233,12 @@ onMounted(() => {
       font-weight: 500;
       line-height: 2rem;
       letter-spacing: normal !important;
-      font-family: inter, sans-serif, -apple-system, blinkmacsystemfont, Segoe UI, roboto, Helvetica Neue, arial, sans-serif, 'Apple Color Emoji',
-        'Segoe UI Emoji', Segoe UI Symbol !important;
+      font-family: inherit;
+      color: #181715;
       text-transform: none !important;
     }
+    .eyebrow { color: #c65a2e; font-size: .68rem; font-weight: 800; letter-spacing: .16em; margin-bottom: 14px; }
+    .formIntro { color: #73706b; font-size: .9rem; line-height: 1.5; max-width: 30ch; margin: -6px 0 22px; }
   }
   .formContainer {
     box-sizing: border-box;
@@ -253,5 +264,8 @@ onMounted(() => {
 
 .loginBtn {
   height: 45px;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(198, 90, 46, .22);
+  &:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(198, 90, 46, .32); }
 }
 </style>

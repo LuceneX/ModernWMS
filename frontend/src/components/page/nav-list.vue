@@ -56,8 +56,8 @@ const method = reactive({
   width: 100%;
   box-sizing: border-box;
   padding-left: 10px;
-  background-color: #f8f8f9;
-  color: #444;
+  background-color: #f5f3ef;
+  color: #181715;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -86,7 +86,7 @@ const method = reactive({
 
 .nav-item:hover {
   cursor: pointer;
-  background-color: #e3ecfb;
+  background-color: #f4ded3;
   transition: @normal-transition;
 }
 
@@ -95,8 +95,8 @@ const method = reactive({
 }
 
 .is-active-item {
-  background-color: #e3ecfb;
-  color: #9C27B0;
+  background-color: #c65a2e;
+  color: #fff;
   transition: @normal-transition;
   position: relative;
   // justify-content: space-between;

@@ -15,6 +15,7 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from 'vue'
 import * as echarts from 'echarts'
+import i18n from '@/languages/i18n'
 
 const props = defineProps({
   barData: Object,
@@ -36,7 +37,7 @@ const initCharts = () => {
     },
     series: [
       {
-        name: '个数',
+        name: i18n.global.t('vwms.quantity'),
         type: 'pie',
         radius: '50%',
         data: props.barData?.barGroupsData,

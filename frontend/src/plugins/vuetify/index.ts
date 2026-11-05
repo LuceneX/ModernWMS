@@ -5,7 +5,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 // Translations provided by Vuetify
-import { zhHans, zhHant, en } from 'vuetify/locale'
+import { en } from 'vuetify/locale'
 import { getSelcectedLangForVuetify } from './method/index'
 
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -13,9 +13,30 @@ import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 
 const vuetify = createVuetify({
+  theme: {
+    defaultTheme: 'lucenex',
+    themes: {
+      lucenex: {
+        dark: false,
+        colors: {
+          primary: '#C65A2E',
+          secondary: '#181715',
+          background: '#F5F3EF',
+          surface: '#FFFFFF',
+          'surface-variant': '#F4DED3',
+          error: '#B42318',
+          success: '#C65A2E',
+          warning: '#C65A2E',
+          info: '#6F6A63',
+          'on-primary': '#FFFFFF',
+          'on-secondary': '#FFFFFF'
+        }
+      }
+    }
+  },
   locale: {
     locale: getStorageLang(),
-    messages: { zhHans, zhHant, en }
+    messages: { en }
   },
   components,
   directives,

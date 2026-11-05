@@ -8,15 +8,7 @@
       </v-breadcrumbs>
     </div>
     <div class="toolsBar">
-      <div class="gitSrc mr-4">
-        <img src="@/assets/img/gitee.png" alt="Gitee" @click="method.toGit('gitee')" />
-      </div>
-      <div class="gitSrc mr-4">
-        <img src="@/assets/img/github.png" alt="Gitee" @click="method.toGit('github')" />
-      </div>
-      <div class="gitSrc mr-4">
-        <img src="@/assets/img/apifox.png" alt="API" @click="method.toGit('apifox')" />
-      </div>
+      <v-btn icon="mdi-help-circle-outline" variant="text" class="headerAction" aria-label="Help" />
       <LanguagesSwitch />
       <v-menu>
         <template #activator="{ props }">
@@ -111,15 +103,6 @@ const method = reactive({
       ViewLogDialogRef.value.openDialog()
     }
   },
-  toGit: (type: string) => {
-    if (type === 'gitee') {
-      window.open('https://gitee.com/modernwms/ModernWMS', '_blank')
-    } else if (type === 'github') {
-      window.open('https://github.com/fjykTec/ModernWMS', '_blank')
-    } else if (type === 'apifox') {
-      window.open('https://apifox.com/apidoc/shared-c34f3f10-1982-4d24-8214-a8c2490fd02e', '_blank')
-    }
-  }
 })
 
 const firstName = computed(() => {
@@ -140,12 +123,10 @@ const firstName = computed(() => {
   align-items: center;
   padding: 0 20px;
   box-sizing: border-box;
-  border-radius: 0 0 10px 10px;
+  border-bottom: 1px solid #ded9d1;
   transition: all 0.5s;
 
-  box-shadow: 0 3px 3px -2px var(--v-shadow-key-umbra-opacity, rgba(0, 0, 0, 0.2)),
-    0 3px 4px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.14)), 0 1px 8px 0 var(--v-shadow-key-penumbra-opacity, rgba(0, 0, 0, 0.12));
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(245, 243, 239, 0.86);
 
   .menuTitle {
     display: flex;
@@ -155,7 +136,7 @@ const firstName = computed(() => {
     }
 
     span {
-      color: #b9b8bc;
+      color: #73706b;
     }
   }
 
@@ -167,7 +148,7 @@ const firstName = computed(() => {
     > img {
       width: 24px;
       height: 24px;
-      opacity: 0.5;
+      opacity: 0.58;
     }
 
     :hover {
@@ -195,11 +176,11 @@ const firstName = computed(() => {
       cursor: pointer;
 
       &:hover {
-        background-color: #e4e5ea;
+        background-color: #ebe6df;
       }
 
       &:active {
-        background-color: #cdced3;
+        background-color: #ded7ce;
       }
     }
 
@@ -223,7 +204,7 @@ const firstName = computed(() => {
       border-radius: 40px;
       width: 40px;
       height: 40px;
-      background-color: #e8e2fb;
+      background-color: #f4ded3;
       position: relative;
 
       .alive {
@@ -243,6 +224,6 @@ const firstName = computed(() => {
 
 .firstName {
   font-weight: 600;
-  color: #9c27b0;
+  color: #c65a2e;
 }
 </style>

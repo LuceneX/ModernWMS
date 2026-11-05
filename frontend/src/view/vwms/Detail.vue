@@ -13,9 +13,9 @@
           <p class="sub-title">{{ props.presentData?.address }}</p>
         </div>
         <div class="text-grid">
-          <p>负责人:</p>
+          <p>{{ $t('vwms.manager') }}:</p>
           <p>{{ props.presentData?.manager }}</p>
-          <p>联系电话:</p>
+          <p>{{ $t('vwms.contactTel') }}:</p>
           <p>{{ props.presentData?.contact_tel }}</p>
           <p>Email:</p>
           <p>{{ props.presentData?.email }}</p>
@@ -23,11 +23,11 @@
         <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
-            <p class="data-label">库区数</p>
+            <p class="data-label">{{ $t('vwms.areaCount') }}</p>
             <p class="data-number">{{ props.presentData?.factory_number }}</p>
           </div>
           <div class="column-center data-container">
-            <p class="data-label">库存量</p>
+            <p class="data-label">{{ $t('vwms.stockQuantity') }}</p>
             <p class="data-number">{{ props.presentData?.warehouse_product_number }}</p>
           </div>
         </div>
@@ -42,19 +42,19 @@
         <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
-            <p class="data-label">总货架数</p>
+            <p class="data-label">{{ $t('vwms.shelfCount') }}</p>
             <p class="data-number">{{ props.presentData?.shelf_number }}</p>
           </div>
           <div class="column-center data-container">
-            <p class="data-label">总库位数</p>
+            <p class="data-label">{{ $t('vwms.locationCount') }}</p>
             <p class="data-number">{{ props.presentData?.shelf_item_number }}</p>
           </div>
           <div class="column-center data-container">
-            <p class="data-label">剩余库位</p>
+            <p class="data-label">{{ $t('vwms.availableLocations') }}</p>
             <p class="data-number">{{ props.presentData?.surplus_number }}</p>
           </div>
           <div class="column-center data-container">
-            <p class="data-label">总货物数</p>
+            <p class="data-label">{{ $t('vwms.productQuantity') }}</p>
             <p class="data-number">{{ props.presentData?.factory_product_number }}</p>
           </div>
         </div>
@@ -66,16 +66,16 @@
           <div class="header">
             <p class="main-title">{{ props.presentData?.shelf_name }}</p>
           </div>
-          <p><span class="em">货架规格: </span>{{ props.presentData?.layer }} * {{ props.presentData?.column }}</p>
+          <p><span class="em">{{ $t('vwms.shelfDimensions') }}: </span>{{ props.presentData?.layer }} * {{ props.presentData?.column }}</p>
         </div>
         <v-divider></v-divider>
         <div class="data-grid">
           <div class="column-center data-container">
-            <p class="data-label">闲置库位</p>
+            <p class="data-label">{{ $t('vwms.availableLocations') }}</p>
             <p class="data-number">{{ props.presentData?.surplus_number }}</p>
           </div>
           <div class="column-center data-container">
-            <p class="data-label">总货物数</p>
+            <p class="data-label">{{ $t('vwms.productQuantity') }}</p>
             <p class="data-number">{{ props.presentData?.shelf_product_number }}</p>
           </div>
         </div>
@@ -84,17 +84,17 @@
     <Transition name="slide-fade">
       <div v-show="props.presentData?.type === 'shelfItem'">
         <div class="header">
-          <p class="main-title">{{ props.presentData?.tag_number }}号库位</p>
+          <p class="main-title">{{ $t('vwms.locationNumber', { number: props.presentData?.tag_number }) }}</p>
         </div>
         <div class="text-grid">
-          <p>层号:</p>
+          <p>{{ $t('vwms.layerNumber') }}:</p>
           <p>{{ props.presentData?.layer_number }}</p>
-          <p>货架编码:</p>
+          <p>{{ $t('vwms.locationCode') }}:</p>
           <p>{{ props.presentData?.location_name }}</p>
         </div>
         <v-divider></v-divider>
         <div>
-          <div v-if="props.presentData?.product?.length === 0">空库位</div>
+          <div v-if="props.presentData?.product?.length === 0">{{ $t('vwms.emptyLocation') }}</div>
           <div v-else class="product-info-container">
             <vxe-table
               align="center"
@@ -104,9 +104,9 @@
               :row-config="{isHover: true}"
             >
               <vxe-column type="seq" width="60"></vxe-column>
-              <vxe-column field="spu_name" title="货物名称"></vxe-column>
-              <vxe-column field="sku_name" title="规格名称"></vxe-column>
-              <vxe-column field="qty" title="数量"></vxe-column>
+              <vxe-column field="spu_name" :title="$t('vwms.productName')"></vxe-column>
+              <vxe-column field="sku_name" :title="$t('vwms.skuName')"></vxe-column>
+              <vxe-column field="qty" :title="$t('vwms.quantity')"></vxe-column>
             </vxe-table>
           </div>
         </div>

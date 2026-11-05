@@ -7,7 +7,7 @@
 <template>
   <div class="shelf-container">
     <div> {{ props.shelfGridData?.shelf_name }}</div>
-    <div class="info">货架规格：{{ props.shelfGridData?.layer }} * {{ props.shelfGridData?.column }}</div>
+    <div class="info">{{ $t('vwms.shelfDimensions') }}: {{ props.shelfGridData?.layer }} * {{ props.shelfGridData?.column }}</div>
     <div :style="styleObject" class="shelf-grid" @click="selectProduct">
       <div
         v-for="(index) in formatIndex"

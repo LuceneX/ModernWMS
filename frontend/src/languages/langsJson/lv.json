@@ -1,0 +1,80 @@
+{
+  "homepage": {
+    "subTitle": "Vienots darbības skats krājumiem, kustībai un cilvēkiem, kas nodrošina preču apriti."
+  },
+  "login": {
+    "loginSuccess": "Pieteikšanās veiksmīga!",
+    "invalidCredentials": "Lietotājvārds vai parole nav pareiza.",
+    "mainButtonLabel": "Pieteikties",
+    "notAuthority": "Kontam nav piešķirtas izvēlnes tiesības. Sazinieties ar administratoru.",
+    "password": "Parole",
+    "rememberTips": "Atcerēties mani",
+    "userName": "Lietotājvārds",
+    "welcomeTitle": "Laipni lūdzam LuceneX"
+  },
+  "router": {
+    "sideBar": {
+      "baseModule": "Pamata iestatījumi",
+      "homepage": "Sākums",
+      "stockManagement": "Krājumu pārvaldība",
+      "warehouseWorkingModule": "Darbs noliktavā",
+      "warehouseSetting": "Noliktavas iestatījumi",
+      "warehouseTaking": "Inventarizācija",
+      "vwms": "Vizuālā noliktava",
+      "statisticAnalysis": "Statistikas analīze",
+      "deliveryManagement": "Piegāžu pārvaldība"
+    }
+  },
+  "system": {
+    "checkText": {
+      "mustInput": "Lūdzu, aizpildiet ",
+      "mustSelect": "Lūdzu, izvēlieties "
+    },
+    "homeHeader": {
+      "changePwd": "Mainīt paroli",
+      "log": "Sistēmas žurnāls",
+      "logout": "Izrakstīties"
+    },
+    "page": {
+      "add": "Pievienot",
+      "close": "Aizvērt",
+      "confirm": "Apstiprināt",
+      "delete": "Dzēst",
+      "edit": "Rediģēt",
+      "export": "Eksportēt",
+      "import": "Importēt",
+      "noData": "Datu nav"
+    }
+  },
+  "vwms": {
+    "collapsePanel": "Sakļaut paneli",
+    "expandPanel": "Izvērst paneli",
+    "back": "Atpakaļ",
+    "closeShelfGrid": "Aizvērt plaukta skatu",
+    "openShelfGrid": "Atvērt plaukta skatu",
+    "stockByProduct": "Krājumi pēc preces",
+    "areaCapacity": "Zonas ietilpība",
+    "areaStockByProduct": "Zonas krājumi pēc preces",
+    "shelfCapacity": "Plaukta ietilpība",
+    "shelfStockBySku": "Plaukta krājumi pēc SKU",
+    "locationCapacity": "Lokācijas ietilpība",
+    "manager": "Atbildīgais",
+    "contactTel": "Tālrunis",
+    "areaCount": "Noliktavas zonas",
+    "stockQuantity": "Krājumu daudzums",
+    "shelfCount": "Plaukti",
+    "locationCount": "Lokācijas",
+    "availableLocations": "Brīvās lokācijas",
+    "productQuantity": "Preču daudzums",
+    "shelfDimensions": "Plaukta izmēri",
+    "shelf": "plaukts",
+    "locationNumber": "Lokācija {number}",
+    "layerNumber": "Līmenis",
+    "locationCode": "Lokācijas kods",
+    "emptyLocation": "Tukša lokācija",
+    "productName": "Preces nosaukums",
+    "skuName": "SKU nosaukums",
+    "quantity": "Daudzums",
+    "average": "Vidēji"
+  }
+}

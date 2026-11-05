@@ -12,13 +12,13 @@
                 <v-icon
                   :icon="item.icon ? 'mdi-' + item.icon : 'mdi-checkbox-blank-circle-outline'"
                   :size="18"
-                  :color="currentRouterPath === item.routerPath ? '#fff' : '#524e59'"
+                  :color="currentRouterPath === item.routerPath ? '#fff' : '#6f6a63'"
                 ></v-icon>
               </div>
               <div class="menuLabel">{{ item.lable }}</div>
             </div>
             <div v-if="item.children && item.children.length > 0" :class="item.showDetail && 'rotate90'">
-              <v-icon icon="mdi-chevron-right" color="#524e59" :size="22"></v-icon>
+              <v-icon icon="mdi-chevron-right" color="#6f6a63" :size="22"></v-icon>
             </div>
           </div>
           <!-- <Transition name="menu"> -->
@@ -36,7 +36,7 @@
                     <v-icon
                       :icon="detailItem.icon ? `mdi-${detailItem.icon}` : 'mdi-checkbox-blank-circle-outline'"
                       :size="14"
-                      :color="currentRouterPath === detailItem.routerPath ? '#fff' : '#524e59'"
+                      :color="currentRouterPath === detailItem.routerPath ? '#fff' : '#6f6a63'"
                     ></v-icon>
                   </div>
                   <div class="menuLabel">{{ detailItem.lable }}</div>
@@ -103,11 +103,12 @@ onMounted(() => {
 
 <style scoped lang="less">
 @headerHeight: 60px;
-@sideBarWidth: 300px;
+  @sideBarWidth: 272px;
 @sideBarTitleHeight: 70px;
 .homeSidebar {
   width: @sideBarWidth;
-  box-shadow: 5px 5px 5px #dbdce2;
+  border-right: 1px solid #ded9d1;
+  background: #fff;
   height: 100%;
   .sideBarTitle {
     height: @sideBarTitleHeight;
@@ -123,7 +124,8 @@ onMounted(() => {
       padding: 10px 0;
       padding-left: 22px;
       padding-right: 8px;
-      border-radius: 0 50px 50px 0;
+      border-radius: 10px;
+      margin-left: 12px;
       margin-bottom: 7px;
       display: flex;
       justify-content: space-between;
@@ -143,18 +145,18 @@ onMounted(() => {
         }
       }
       &:hover {
-        background-color: #edeef3;
+        background-color: #f5f3ef;
       }
     }
 
     .openedMenuItems {
-      background-color: #e8e9ed;
+      background-color: #f4ded3;
     }
     .activeMenuItems {
-      background: linear-gradient(to right, #af85fc, #9155fd);
+      background: #c65a2e;
       color: #fff;
       &:hover {
-        background: linear-gradient(to right, #af85fc, #9155fd);
+        background: #b84f26;
       }
     }
 
@@ -164,7 +166,7 @@ onMounted(() => {
 
     &::-webkit-scrollbar-thumb {
       border-radius: 20px;
-      background-color: #e5e5e9;
+      background-color: #d7d0c7;
     }
   }
 }

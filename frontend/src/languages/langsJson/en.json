@@ -224,10 +224,11 @@
     }
   },
   "homepage": {
-    "subTitle": "Modern Warehouse Management System"
+    "subTitle": "One operational view for stock, movement, and the people keeping goods in motion."
   },
   "login": {
     "loginSuccess": "Login succeeded!",
+    "invalidCredentials": "The username or password is incorrect.",
     "mainButtonLabel": "Login",
     "notAuthority": "Undistributed menu access the account, please contact the administrator to add it!",
     "password": "Password",
@@ -235,7 +236,7 @@
     "registerTips": "No account? Click here to register!",
     "rememberTips": "Remember me",
     "userName": "UserName",
-    "welcomeTitle": "Welcome to ModernWMS!👋🏻"
+    "welcomeTitle": "Welcome to LuceneX"
   },
   "router": {
     "sideBar": {
@@ -769,5 +770,36 @@
         "putaway_date":"Listing Date"
       }
     }
+  },
+  "vwms": {
+    "collapsePanel": "Collapse panel",
+    "expandPanel": "Expand panel",
+    "back": "Back",
+    "closeShelfGrid": "Close shelf view",
+    "openShelfGrid": "Open shelf view",
+    "stockByProduct": "Stock by product",
+    "areaCapacity": "Area capacity",
+    "areaStockByProduct": "Area stock by product",
+    "shelfCapacity": "Shelf capacity",
+    "shelfStockBySku": "Shelf stock by SKU",
+    "locationCapacity": "Location capacity",
+    "manager": "Manager",
+    "contactTel": "Contact phone",
+    "areaCount": "Storage areas",
+    "stockQuantity": "Stock quantity",
+    "shelfCount": "Shelves",
+    "locationCount": "Locations",
+    "availableLocations": "Available locations",
+    "productQuantity": "Product quantity",
+    "shelfDimensions": "Shelf dimensions",
+    "shelf": "shelf",
+    "locationNumber": "Location {number}",
+    "layerNumber": "Layer",
+    "locationCode": "Location code",
+    "emptyLocation": "Empty location",
+    "productName": "Product name",
+    "skuName": "SKU name",
+    "quantity": "Quantity",
+    "average": "Average"
   }
 }

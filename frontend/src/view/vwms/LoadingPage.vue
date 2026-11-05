@@ -7,12 +7,12 @@
 <template>
   <div class="mask">
     <div class="loading-title">
-      <div>ModernWMS</div>
+      <div>LuceneX</div>
     </div>
     <div class="loading-progress-bar">
       <v-progress-linear
         :model-value="props.progress"
-        color="indigo"
+        color="primary"
         height="25"
         striped
       >
@@ -50,7 +50,7 @@ const props = defineProps({
 }
 
 .loading-title {
-  color: #9c27b0;
+  color: #c65a2e;
   font-weight: bold;
   font-size: 60px;
   margin-bottom: 20px;

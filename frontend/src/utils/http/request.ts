@@ -3,7 +3,6 @@ import { store } from '@/store'
 import { emitter } from '@/utils/bus'
 import { router } from '@/router'
 import { hookComponent } from '@/components/system'
-import i18n from '@/languages/i18n'
 
 // Basis of axios
 const SERVER_URL = `${ import.meta.env.VITE_BASE_PATH }:${ import.meta.env.VITE_SERVER_PORT }`
@@ -114,11 +113,11 @@ http.interceptors.request.use(
 
     let culture = 'en-us'
     switch (store.getters['system/language']) {
-      case 'zh':
-        culture = 'zh-cn'
-        break
       case 'en':
         culture = 'en-us'
+        break
+      case 'lv':
+        culture = 'lv-lv'
         break
     }
     config.params ? (config.params.culture = culture) : (config.params = { culture })
@@ -185,10 +184,21 @@ http.interceptors.response.use(
   (error) => {
     closeLoading()
     // 1.There isn't 'error.response' object when request timeout
+    const failureMessage = !error.response
+      ? (store.getters['system/language'] === 'lv'
+        ? 'Noliktavas pakalpojums nav sasniedzams. Pārbaudiet, vai backend darbojas, un mēģiniet vēlreiz.'
+        : 'The warehouse service is unreachable. Check that the backend is running, then retry.')
+      : error.response.status === 401
+        ? (store.getters['system/language'] === 'lv' ? 'Sesija ir beigusies. Lūdzu, piesakieties vēlreiz.' : 'Your session has expired. Please sign in again.')
+        : error.response.status === 403
+          ? (store.getters['system/language'] === 'lv' ? 'Jūsu kontam nav piekļuves šai darbībai.' : 'Your account does not have access to this operation.')
+          : (store.getters['system/language'] === 'lv' ? 'Noliktavas pakalpojumam nepieciešama administratora uzmanība.' : 'The warehouse service needs attention. Contact an administrator.')
+
+    emitter.emit('apiFailure', failureMessage)
     if (!error.response) {
       hookComponent.$message({
         type: 'error',
-        content: i18n.global.t('system.tips.requestTimeout')
+        content: failureMessage
       })
       return
     }
@@ -205,7 +215,7 @@ http.interceptors.response.use(
 
     hookComponent.$message({
       type: 'error',
-      content: i18n.global.t('system.tips.requestFail')
+      content: failureMessage
     })
     return error
   }

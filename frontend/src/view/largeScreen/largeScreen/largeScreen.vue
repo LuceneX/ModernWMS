@@ -97,7 +97,7 @@ const toggleFullScreen = () => {
     height: 100%;
     z-index: 999;
     background-color: #020308;
-    background-image: url('@/assets/img/home_bg.png');
+    background-image: linear-gradient(135deg, #181715 0%, #24211e 52%, #3b2118 100%);
   }
   .screenfullbtn {
     position: absolute;
@@ -115,7 +115,7 @@ const toggleFullScreen = () => {
     height: 1080px ;
     box-sizing: border-box;
     padding: 12px;
-    background-image: url('@/assets/img/home_bg.png');
+    background-image: linear-gradient(135deg, #181715 0%, #24211e 52%, #3b2118 100%);
     transition: all 0.2s ease-in-out;
 
     .screen-chart-section1 {

@@ -20,6 +20,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/view/login/login.vue')
   },
   {
+    path: '/licenses',
+    name: 'licenses',
+    component: () => import('@/view/licenses.vue')
+  },
+  {
     name: 'home',
     path: '/home',
     redirect: 'homepage',

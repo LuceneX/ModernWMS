@@ -24,8 +24,8 @@ const openedMenus = computed(() => store.getters['system/openedMenus'])
 </script>
 
 <style scoped lang="less">
-@headerHeight: 60px;
-@sideBarWidth: 300px;
+@headerHeight: 72px;
+@sideBarWidth: 272px;
 @sideBarTitleHeight: 80px;
 
 .HomeContainer {
@@ -36,7 +36,8 @@ const openedMenus = computed(() => store.getters['system/openedMenus'])
 
   .homeRight {
     width: calc(100% - @sideBarWidth);
-    padding: 0 5%;
+    padding: 0 3.5%;
+    background: #f5f3ef;
 
     .homeRouterContainer {
       height: calc(100% - @headerHeight);

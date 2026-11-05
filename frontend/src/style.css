@@ -4,12 +4,61 @@ body {
   margin: 0;
   height: 100%;
   width: 100%;
+  background: #f5f3ef;
+  color: #181715;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 #app {
   height: 100vh;
   width: 100vw;
 }
+
+:root {
+  --lx-ink: #181715;
+  --lx-ink-soft: #6f6a63;
+  --lx-paper: #f5f3ef;
+  --lx-panel: #ffffff;
+  --lx-line: #ded9d1;
+  --lx-accent: #c65a2e;
+  --lx-accent-soft: #f4ded3;
+  --lx-radius: 14px;
+}
+
+::selection { background: var(--lx-accent); color: #fff; }
+.v-btn { text-transform: none !important; letter-spacing: .01em !important; font-weight: 700 !important; }
+.v-field { border-radius: 10px !important; }
+.v-card { border-radius: var(--lx-radius) !important; }
+.v-table { background: var(--lx-panel) !important; }
+
+/* LuceneX product-wide surface language. */
+body { background: var(--lx-paper); }
+.v-application { background: var(--lx-paper) !important; color: var(--lx-ink) !important; }
+.v-card, .v-dialog > .v-overlay__content > .v-card, .v-menu > .v-overlay__content > .v-card { border: 1px solid var(--lx-line); box-shadow: 0 14px 34px rgba(24, 23, 21, .08) !important; }
+.v-btn { min-height: 40px; }
+.v-btn.v-btn--variant-outlined { border-color: var(--lx-line); color: var(--lx-ink); }
+.v-btn.v-btn--variant-text { color: var(--lx-ink-soft); }
+.v-btn:focus-visible, .v-field:focus-within, .v-list-item:focus-visible { outline: 2px solid var(--lx-accent); outline-offset: 2px; }
+.v-field { background: var(--lx-panel) !important; }
+.v-field--variant-solo, .v-field--variant-solo-filled { box-shadow: 0 1px 2px rgba(24,23,21,.08) !important; }
+.v-field--variant-outlined .v-field__outline { color: var(--lx-line); }
+.v-field--focused .v-field__outline { color: var(--lx-accent) !important; }
+.v-label, .v-input__details { color: var(--lx-ink-soft); }
+.v-checkbox .v-selection-control__input > .v-icon { color: var(--lx-accent); }
+.v-data-table, .v-data-table__tr, .v-data-table__td, .v-data-table__th { border-color: var(--lx-line) !important; }
+.v-data-table__th { color: var(--lx-ink-soft) !important; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+.v-data-table__tr:hover { background: var(--lx-accent-soft) !important; }
+.v-dialog > .v-overlay__content { max-width: min(92vw, 760px); }
+.v-alert { border-radius: 10px !important; }
+.v-progress-linear { border-radius: 99px; }
+.v-overlay__scrim { background: var(--lx-ink) !important; opacity: .42 !important; }
+.v-list { background: var(--lx-panel) !important; }
+.v-list-item--active { background: var(--lx-accent-soft) !important; color: var(--lx-ink) !important; }
+.vxe-table--render-default .vxe-table--header-wrapper, .vxe-table--render-default .vxe-table--body-wrapper { background: var(--lx-panel); }
+.vxe-table--render-default .vxe-header--column { color: var(--lx-ink-soft); background: var(--lx-paper); }
+.vxe-table--render-default.border--default .vxe-table--header-wrapper, .vxe-table--render-default.border--default .vxe-table--body-wrapper, .vxe-table--render-default.border--default .vxe-table--footer-wrapper { border-color: var(--lx-line); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .001ms !important; } }
 
 .hiprint-headerLine, .hiprint-footerLine {
   border-color: red !important;
@@ -38,6 +87,3 @@ body {
   top: -12px;
   font-size: 12px;
 }
-/* .hiprint-printElement-image-content img{
-  content: url('@/assets/img/webLogoMini.png')!important;
-} */

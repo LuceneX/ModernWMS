@@ -7,9 +7,9 @@ interface pageHasElement {
   hasToolBar?: boolean
 }
 
-export const primaryColor = '#9C27B0'
-export const primaryLightColor = '#ECE7F6'
-export const lightGrey = '#999999'
+export const primaryColor = '#C65A2E'
+export const primaryLightColor = '#F4DED3'
+export const lightGrey = '#73706B'
 export const errorColor = '#BA2828'
 
 // The low resolution of the selection box ADAPTS to solve the problem that the scroll bar of the selection box button causes the button to disappear

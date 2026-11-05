@@ -31,10 +31,9 @@ function getStorageLang() {
   }
 
   switch (langStr) {
-    case 'zh-CN':
-      return 'zh_CN'
-    case 'zh-TW':
-      return 'zh_TW'
+    case 'lv-LV':
+    case 'lv':
+      return 'lv_LV'
     case 'en':
     default:
       return 'en_US'

@@ -13,21 +13,21 @@
     <div class="VWms-header">
       <div class="tooltip">
         <v-btn icon variant="text" @click="handleShowRightContainer">
-          <v-tooltip activator="parent" location="bottom">{{ showRightContainer ? '收起' : '展开' }}右栏</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ showRightContainer ? $t('vwms.collapsePanel') : $t('vwms.expandPanel') }}</v-tooltip>
           <v-icon :icon="`mdi-arrow-expand-${showRightContainer?'right':'left'}`"></v-icon>
         </v-btn>
 
         <v-btn icon variant="text" @click="toggleFullScreen">
-          <v-tooltip activator="parent" location="bottom">全屏</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ $t('system.page.fullScreen') }}</v-tooltip>
           <v-icon :icon="`mdi-arrow-${fullScreen?'collapse':'expand'}`"></v-icon>
         </v-btn>
 
         <v-btn icon variant="text" @click="handleBreak">
-          <v-tooltip activator="parent" location="bottom">回退</v-tooltip>
+          <v-tooltip activator="parent" location="bottom">{{ $t('vwms.back') }}</v-tooltip>
           <v-icon icon="mdi-reply"></v-icon>
         </v-btn>
         <v-btn v-if="presentData?.type === 'shelf' || presentData?.type === 'shelfItem'" @click="handleShelfGrid">
-          {{ showShelfGrid ? '关闭' : '打开' }}货架二维视图
+          {{ showShelfGrid ? $t('vwms.closeShelfGrid') : $t('vwms.openShelfGrid') }}
         </v-btn>
       </div>
     </div>
@@ -87,6 +87,7 @@ import Bar from '@/view/vwms/chat/Bar.vue'
 import Pie from '@/view/vwms/chat/Pie.vue'
 import ShelfGrid from '@/view/vwms/ShelfGrid.vue'
 import { factoryData, productData, shelfItemData, warehouseData } from '@/view/vwms/data/data'
+import i18n from '@/languages/i18n'
 
 const VWmsIframe = ref()
 const route = useRoute()
@@ -215,7 +216,7 @@ const getWarehouseData = (): warehouseShowDataType => {
 const getWarehouseChatData = () => {
   const barGroupsData = getGroupsData(productInfo.value, 'spu_name', 'qty')
     .slice(0, 6)
-  const barTitle = '库存商品量'
+  const barTitle = i18n.global.t('vwms.stockByProduct')
   barData.value = {
     barTitle,
     barGroupsData
@@ -231,7 +232,7 @@ const getWarehouseChatData = () => {
 
   const xData = _.map(pieGroupsData, 'name')
   const yData = _.map(pieGroupsData, 'value')
-  const pieTitle = '库区容量'
+  const pieTitle = i18n.global.t('vwms.areaCapacity')
   pieData.value = {
     pieTitle,
     xData,
@@ -263,7 +264,7 @@ const getFactoryData = (id: number): factoryShowDataType => {
 const getFactoryChatData = (usedFactoryShelfItem, factoryShelf) => {
   const barGroupsData = getGroupsData(usedFactoryShelfItem, 'spu_name', 'qty')
     .slice(0, 6)
-  const barTitle = '库区库存商品量'
+  const barTitle = i18n.global.t('vwms.areaStockByProduct')
   barData.value = {
     barTitle,
     barGroupsData
@@ -278,7 +279,7 @@ const getFactoryChatData = (usedFactoryShelfItem, factoryShelf) => {
 
   const xData = _.map(pieGroupsData, 'name')
   const yData = _.map(pieGroupsData, 'value')
-  const pieTitle = '货架容量'
+  const pieTitle = i18n.global.t('vwms.shelfCapacity')
   pieData.value = {
     pieTitle,
     xData,
@@ -296,7 +297,7 @@ const getShelfData = (id: number): shelfShowDataType => {
   getShelfChatData(shelfProduct, shelf)
   // 货架二维图数据
   shelfGridData.value = {
-    shelf_name: `${ shelf.shelf_name }号货架`,
+    shelf_name: `${ shelf.shelf_name } ${ i18n.global.t('vwms.shelf') }`,
     layer: shelf.layer,
     column: shelf.column,
     products: shelf.shelfItems.map(shelfItem => {
@@ -306,7 +307,7 @@ const getShelfData = (id: number): shelfShowDataType => {
   }
 
   return {
-    shelf_name: `${ shelf.shelf_name }号货架`,
+    shelf_name: `${ shelf.shelf_name } ${ i18n.global.t('vwms.shelf') }`,
     layer: shelf.layer,
     column: shelf.column,
     surplus_number: shelf.layer * shelf.column - _.sumBy(shelf.shelfItems, shelfItem => shelfItem.product.length),
@@ -318,7 +319,7 @@ const getShelfData = (id: number): shelfShowDataType => {
 // 货架的图形数据
 const getShelfChatData = (shelfProduct, shelf) => {
   const barGroupsData = getGroupsData(shelfProduct, 'sku_name', 'qty')
-  const barTitle = '货架商品规格量'
+  const barTitle = i18n.global.t('vwms.shelfStockBySku')
   barData.value = {
     barTitle,
     barGroupsData
@@ -333,7 +334,7 @@ const getShelfChatData = (shelfProduct, shelf) => {
 
   const xData = _.map(pieGroupsData, 'name')
   const yData = _.map(pieGroupsData, 'value')
-  const pieTitle = '库位容量'
+  const pieTitle = i18n.global.t('vwms.locationCapacity')
   pieData.value = {
     pieTitle,
     xData,
@@ -355,7 +356,7 @@ const getShelfItemData = (id: number): shelfItemShowDataType | any => {
   }
   return {
     tag_number: id,
-    location_name: '无',
+    location_name: 'Unassigned',
     layer_number: Math.ceil(id / shelf.column),
     product: [],
     type: 'shelfItem'
