@@ -5,7 +5,11 @@ import { router } from '@/router'
 import { hookComponent } from '@/components/system'
 
 // Basis of axios
-const SERVER_URL = `${ import.meta.env.VITE_BASE_PATH }:${ import.meta.env.VITE_SERVER_PORT }`
+// Cloudflare deployments serve the SPA and API proxy from the same origin.
+// Keep the local Colima URL as the default for existing development builds,
+// while allowing a relative `/api` base in production without hard-coding a
+// hostname into the browser bundle.
+const SERVER_URL = import.meta.env.VITE_API_BASE_URL || `${ import.meta.env.VITE_BASE_PATH }:${ import.meta.env.VITE_SERVER_PORT }`
 axios.defaults.baseURL = SERVER_URL
 const http = axios.create({
   baseURL: SERVER_URL,
