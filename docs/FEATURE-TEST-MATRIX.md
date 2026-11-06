@@ -151,10 +151,11 @@ not production data; retain or remove them deliberately when testing locally.
   The actual operation-specific approval execution/decision screens are not
   implemented in the upstream schema exposed by this fork, so that portion
   remains PARTIAL rather than being represented as complete.
-- Individual menu action permissions are still client-side data; backend
-  endpoints enforce authentication and tenant scoping but do not yet enforce
-  each `menu_actions_authority` code. This is a security limitation requiring
-  a dedicated authorization policy pass.
+- Server-side enforcement now covers mapped CRUD/import/reset-password/delete
+  actions through the global `WmsActionAuthorizationFilter`. Read-only paths
+  remain authentication- and tenant-scoped. Transaction-specific workflow
+  actions whose authority codes do not match CRUD conventions still require
+  explicit aliases and must not be treated as fully certified until exercised.
 - The application targets .NET 7, which is out of mainstream support. This is
   a deployment/security risk and should be tracked separately from functional
   reconciliation.

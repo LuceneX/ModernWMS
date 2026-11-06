@@ -29,6 +29,11 @@ namespace ModernWMS.Core.JWT
         public string user_role { get; set; } = "admin";
 
         /// <summary>
+        /// Database role id used for server-side menu-action authorization.
+        /// </summary>
+        public int userrole_id { get; set; } = 1;
+
+        /// <summary>
         /// tenant
         /// </summary>
         public long tenant_id { get; set; } = 1;

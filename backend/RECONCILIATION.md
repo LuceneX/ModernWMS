@@ -83,7 +83,8 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
   schema and are documented as partial.
 - The approval flow builder previously recursed using the same parent node and
   could loop indefinitely. It now advances using the current node GUID.
-- Authentication and tenant scoping are enforced server-side. Individual
-  `menu_actions_authority` codes are still only consumed by the client; a
-  backend action-policy layer is required before those fine-grained
-  permissions can be claimed as enforced.
+- Authentication and tenant scoping are enforced server-side. The global
+  `WmsActionAuthorizationFilter` now enforces mapped CRUD/import/reset-password
+  and delete action codes for authenticated roles. Read-only paths remain
+  authentication- and tenant-scoped. Workflow-specific action aliases still
+  need explicit coverage before every operation can be certified.

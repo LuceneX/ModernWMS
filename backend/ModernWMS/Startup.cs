@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using ModernWMS.Core.Extentions;
+using ModernWMS.WMS.Middleware;
 namespace ModernWMS
 {
     public class Startup
@@ -26,6 +27,9 @@ namespace ModernWMS
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddExtensionsService(Configuration);
+            services.AddScoped<WmsActionAuthorizationFilter>();
+            services.Configure<Microsoft.AspNetCore.Mvc.MvcOptions>(options =>
+                options.Filters.AddService<WmsActionAuthorizationFilter>());
         }
 
         /// <summary>
