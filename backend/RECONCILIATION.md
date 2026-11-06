@@ -27,13 +27,13 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 3. Menu/action authority is represented by `menu.menu_actions` and `rolemenu.menu_actions_authority`. The bundled SQLite copy was missing `menu_actions`, so role-menu queries could fail with `operation_failed`; the repair script now adds it with `[]` as the safe default.
 4. The SQLite snapshot also drifted from the EF model: `spu.bar_code` was required but absent from the model, and `sku.bar_code` was required by the model but absent from SQLite. Both are now represented in the models and repaired additively by `ensure-sqlite-schema.sh`.
 5. The SQLite snapshot could also omit the four statistics menu rows even though the Vue routes and API controllers existed. The repair script now restores those entries and administrator export authorities additively.
-6. Action authority is now enforced for the mapped CRUD/import/reset-password/delete paths by `WmsActionAuthorizationFilter`; workflow-specific aliases remain an explicit certification boundary.
+6. Action authority is now enforced for the mapped CRUD/import/reset-password/delete paths by `WmsActionAuthorizationFilter`; warehouse-processing `process-confirm` and `adjustment-confirm` aliases are also mapped and exercised.
 
 ## `operation_failed` diagnostic map
 
 - SQL/schema failure: inspect the latest NLog file, run `./ModernWMS/Database/ensure-sqlite-schema.sh`, then retry the endpoint.
 - Authentication failure: expect HTTP 401 after the base authorization fix; verify the bearer token and `/login` result.
-- Authorization failure: expect HTTP 403 when an authenticated policy denies access. Mapped menu actions are server-enforced; workflow-specific aliases remain a certification boundary.
+- Authorization failure: expect HTTP 403 when an authenticated policy denies access. Mapped menu actions and the certified warehouse-processing aliases are server-enforced; any future workflow alias still requires its own fixture.
 - Service-level failure: inspect the endpoint service return path; several inventory and dispatch operations intentionally translate failed writes into `operation_failed`.
 
 ## Smoke-test plan
@@ -108,20 +108,25 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
   authorities. Browser CRUD and export were exercised with an isolated
   solution; the generated `Print Settings.xlsx` was captured and validated as
   an Excel 2007+ archive before the fixture was removed.
-- Approval workflow model/service code is present, but no controller, frontend
-  API module, or routed UI exposes it in this fork. The fork now exposes
+- Approval workflow model/service code is present. This fork exposes
   tenant-scoped flow-definition configuration and map endpoints, and an
   isolated two-node create/map/list/delete test passes. Operation-specific
-  approval execution and decision screens remain unavailable in the upstream
-  schema and are documented as partial.
+  approval execution and decision screens are unavailable in the upstream
+  schema and are documented as an explicit boundary.
 - The approval flow builder previously recursed using the same parent node and
   could loop indefinitely. It now advances using the current node GUID.
 - Approval approver persistence now assigns the `FlowSetUserEntity.FlowSet`
   navigation explicitly. Without that relationship, SQLite flow creation
   returned `operation_failed` when an approver was included; the fix was
   rebuilt and verified with an admin create → map → delete fixture.
+- A fresh two-node fixture with one approver and one condition returned the
+  expected nested root/child map, persisted both child collections, appeared in
+  the tenant list, and was deleted cleanly. There is still no operation-level
+  approval submission or decision endpoint in the upstream schema, so that is
+  an explicit unavailable boundary rather than an untested claim.
 - Authentication and tenant scoping are enforced server-side. The global
   `WmsActionAuthorizationFilter` now enforces mapped CRUD/import/reset-password
   and delete action codes for authenticated roles. Read-only paths remain
-  authentication- and tenant-scoped. Workflow-specific action aliases still
-  need explicit coverage before every operation can be certified.
+  authentication- and tenant-scoped. Warehouse-processing confirmation aliases
+  were exercised with an admin fixture and denied-action probes remain part of
+  the permission test record.

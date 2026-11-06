@@ -41,7 +41,7 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, import/delete, browser export, and QR preview |
 | Statistics | ASN, delivery, stock-age, safety-stock exports | PASS for all four menu routes and browser XLSX downloads |
 | Visual warehouse | spatial/3D view | PASS after iframe sizing fix; Unity scene and LuceneX warehouse KPI panel load. Latvian/Chinese Unity-internal labels still require a dedicated asset/localization pass |
-| Approval-flow configuration | flow definition, nested map, approvers, conditions | PASS for isolated create → map traversal → list → exact delete; transaction-specific approval execution remains PARTIAL |
+| Approval-flow configuration | flow definition, nested map, approvers, conditions | PASS for isolated create → nested map → approver/condition persistence → list → exact delete; transaction execution is unavailable because no consuming endpoint or decision UI exists in the upstream schema |
 
 ## Verified against Colima
 
@@ -125,9 +125,12 @@ remain available for continued manual testing:
   was validated as an Excel 2007+ archive, and was then removed from the
   container database.
 - approval-flow configuration was exercised with an isolated two-node tenant
-  fixture. Create, nested map traversal, list, exact delete, and post-delete
-  not-found verification all passed. The flow-tree recursion defect and the
-  missing controller/request contract were corrected before this test.
+  fixture. Create, nested map traversal, approver persistence, condition
+  persistence, list, exact delete, and post-delete not-found verification all
+  passed. The flow-tree recursion defect and the missing controller/request
+  contract were corrected before this test. No transaction-specific approval
+  execution endpoint or decision screen exists in the upstream schema, so that
+  boundary is documented rather than represented as a passing feature.
 - After the server-side authorization filter was deployed, approval
   configuration was re-exercised with an approver: admin create, nested map
   traversal showing the approver, and exact delete all returned success. The
@@ -191,8 +194,8 @@ not production data; retain or remove them deliberately when testing locally.
 - Approval workflow entities and a service exist in the backend, but this fork
   now have tenant-scoped configuration endpoints and a frontend API module.
   The actual operation-specific approval execution/decision screens are not
-  implemented in the upstream schema exposed by this fork, so that portion
-  remains PARTIAL rather than being represented as complete.
+  implemented in the upstream schema exposed by this fork; this is recorded as
+  an unavailable boundary, not as a falsely passing feature.
 - Server-side enforcement now covers mapped CRUD/import/reset-password/delete
   actions through the global `WmsActionAuthorizationFilter`. Read-only paths
   remain authentication- and tenant-scoped. Transaction-specific workflow
@@ -221,7 +224,7 @@ not production data; retain or remove them deliberately when testing locally.
 
 ## How to extend this matrix
 
-For each `PARTIAL` row, add a fixture-backed test that creates or selects a
+For each future `PARTIAL` row, add a fixture-backed test that creates or selects a
 record, performs the write action, verifies the response and database state,
 then cleans up only records created by the test. Never use production data as
 an implicit test fixture.
