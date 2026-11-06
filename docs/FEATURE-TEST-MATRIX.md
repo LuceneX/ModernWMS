@@ -24,14 +24,14 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Role-menu permissions | assign menus and action authorities | PASS for create → read → update → authority readback → delete |
 | User management | save, delete, import, export, reset password | PASS for create → read → update → reset password → delete and isolated import/delete; export remains PARTIAL |
 | Commodity categories | save, delete, export | PASS for create |
-| Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for create; remaining actions PARTIAL |
+| Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for create, QR preview, and barcode preview; edit/delete/export remain PARTIAL |
 | Suppliers | save, delete, import, export | PASS for create |
 | Print solutions | save, delete, export | PASS for create → read → update → get-by-path → delete; export remains PARTIAL |
 | Warehouse settings | warehouse/area/location save, delete, import, export, barcode/QR print | PASS for warehouse/area/location create |
 | Cargo owners | save, delete, import, export | PASS for create |
 | Freight settings | save, delete, import, export | PASS for create and dispatch-rate use |
 | Customers | save, delete, import, export | PASS for create and dispatch use |
-| Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway |
+| Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway; isolated confirm → cancel → delete and export verified |
 | Stock management | stock/location reads, stock export | PASS for read path and putaway-generated stock; export remains PARTIAL |
 | Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for fixture create → process-confirm → adjustment-confirm; split/group/delete/export remain PARTIAL |
 | Warehouse moves | save, delete, export, confirm | PASS for create → confirm; destination merge regression covered |
@@ -39,7 +39,7 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Warehouse adjustment | export and adjustment workflow | PASS for create → confirm; controller contract repaired |
 | Stocktaking | save, delete, export, confirm operation, confirm adjustment | PASS for create → count confirm → adjustment confirm |
 | Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, and import/delete; export and QR/print remain PARTIAL |
-| Statistics | ASN, delivery, stock-age, safety-stock exports | PASS for ASN, delivery, stock-age, and safety-stock list paths; browser export remains PARTIAL |
+| Statistics | ASN, delivery, stock-age, safety-stock exports | PASS for all four menu routes and browser XLSX downloads |
 | Visual warehouse | spatial/3D view | PASS after iframe sizing fix; Unity scene and LuceneX warehouse KPI panel load. Latvian/Chinese Unity-internal labels still require a dedicated asset/localization pass |
 | Approval-flow configuration | flow definition, nested map, approvers, conditions | PASS for isolated create → map traversal → list → exact delete; transaction-specific approval execution remains PARTIAL |
 
@@ -96,6 +96,14 @@ remain available for continued manual testing:
   aggregation in SQLite and to calculate stock age after materialization; both
   endpoints now return populated successful responses from the rebuilt Colima
   container.
+- an isolated ASN was created, confirmed, cancelled, and deleted through the
+  public API; the cancelled state was accepted and the exact fixture was removed.
+- the four statistics menu entries were restored additively by the SQLite
+  reconciliation script. Browser exports were downloaded successfully as
+  `Safety Stock.xlsx`, `Receipt Details.xlsx`, `Shipment statistics.xlsx`, and
+  `Stock Age Analysis.xlsx`.
+- the commodity page rendered both a QR preview and a barcode preview for the
+  QA SKU after the parent-SPU barcode update path was repaired.
 - approval-flow configuration was exercised with an isolated two-node tenant
   fixture. Create, nested map traversal, list, exact delete, and post-delete
   not-found verification all passed. The flow-tree recursion defect and the
@@ -142,7 +150,7 @@ not production data; retain or remove them deliberately when testing locally.
   allocation, picking, packaging, weighing, delivery, freight, signature,
   cancellation, and import/delete. Export and QR/print interaction still need
   browser-level verification.
-- QR preview, browser print invocation, and XLSX export were exercised from
+- QR preview, barcode preview, browser print invocation, and XLSX export were exercised from
   the warehouse-processing UI. Physical printer output is not claimed because
   no printer was attached to this local environment.
 - The processing service previously matched expiry, price, and putaway fields
@@ -157,9 +165,9 @@ not production data; retain or remove them deliberately when testing locally.
 - The frontend build reports legacy `eval` usage in `yk-vue-plugin-hiprint`
   and several large bundles.
 - User, warehouse-master, receiving, inventory, dispatch, and statistics
-  exports are generated by the browser-side XLSX helper. They still need a
-  browser download assertion for every individual screen; API success alone
-  does not prove a file was downloaded.
+  exports are generated by the browser-side XLSX helper. Individual screens
+  not named in the fixture evidence above still need browser download assertions;
+  API success alone does not prove a file was downloaded.
 - Approval workflow entities and a service exist in the backend, but this fork
   now have tenant-scoped configuration endpoints and a frontend API module.
   The actual operation-specific approval execution/decision screens are not

@@ -444,6 +444,7 @@ namespace ModernWMS.WMS.Services
                      spu_name = m.spu_name,
                      category_id = m.category_id,
                      spu_description = m.spu_description,
+                     bar_code = m.bar_code,
                      supplier_id = m.supplier_id,
                      supplier_name = m.supplier_name,
                      brand = m.brand,
@@ -511,6 +512,11 @@ namespace ModernWMS.WMS.Services
             entity.spu_name = viewModel.spu_name;
             entity.category_id = viewModel.category_id;
             entity.spu_description = viewModel.spu_description;
+            // Keep the parent/SPU barcode in sync with the edit form. The
+            // barcode preview uses this field, while SKU rows keep their own
+            // barcodes below. Previously the value was accepted by the API
+            // model but silently discarded during updates.
+            entity.bar_code = viewModel.bar_code;
             entity.supplier_id = viewModel.supplier_id;
             entity.supplier_name = viewModel.supplier_name;
             entity.brand = viewModel.brand;

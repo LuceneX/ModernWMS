@@ -182,6 +182,49 @@ for table in "${expected_tables[@]}"; do
   fi
 done
 
+# Older bundled SQLite snapshots were created before the statistics menus were
+# persisted. The Vue views and API controllers still exist, so restore the
+# official menu entries additively for every tenant represented by a user.
+# INSERT OR IGNORE keeps this safe for databases that already contain them.
+sqlite3 "$DB_PATH" <<'SQL'
+INSERT INTO menu
+  (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT 'saftyStock', 'statisticAnalysis ', 'saftyStock', '', 'statisticAnalysis/saftyStock', 4, tenant_id, '[]'
+FROM "user" u
+WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'saftyStock' AND m.tenant_id = u.tenant_id)
+GROUP BY tenant_id;
+INSERT INTO menu
+  (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT 'asnStatistic', 'statisticAnalysis ', 'asnStatistic', '', 'statisticAnalysis/asnStatistic', 5, tenant_id, '[]'
+FROM "user" u
+WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'asnStatistic' AND m.tenant_id = u.tenant_id)
+GROUP BY tenant_id;
+INSERT INTO menu
+  (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT 'deliveryStatistic', 'statisticAnalysis ', 'deliveryStatistic', '', 'statisticAnalysis/deliveryStatistic', 6, tenant_id, '[]'
+FROM "user" u
+WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'deliveryStatistic' AND m.tenant_id = u.tenant_id)
+GROUP BY tenant_id;
+INSERT INTO menu
+  (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT 'stockageStatistic', 'statisticAnalysis ', 'stockageStatistic', '', 'statisticAnalysis/stockageStatistic', 7, tenant_id, '[]'
+FROM "user" u
+WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'stockageStatistic' AND m.tenant_id = u.tenant_id)
+GROUP BY tenant_id;
+
+INSERT INTO rolemenu
+  (userrole_id, menu_id, authority, create_time, last_update_time, tenant_id, menu_actions_authority)
+SELECT r.id, m.id, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, m.tenant_id, '["export"]'
+FROM userrole r
+JOIN menu m ON m.tenant_id = r.tenant_id
+WHERE r.role_name = 'admin'
+  AND m.menu_name IN ('saftyStock', 'asnStatistic', 'deliveryStatistic', 'stockageStatistic')
+  AND NOT EXISTS (
+    SELECT 1 FROM rolemenu existing
+    WHERE existing.userrole_id = r.id AND existing.menu_id = m.id AND existing.tenant_id = m.tenant_id
+  );
+SQL
+
 # The stock distribution creates the admin role with every menu, but older
 # SQLite snapshots can contain empty action lists. That leaves the UI readable
 # while disabling every save/edit/delete/confirm control. Keep the repair

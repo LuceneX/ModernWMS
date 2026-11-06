@@ -26,13 +26,14 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 2. The custom `ApiResponseHandler` ended in `NotImplementedException` after token parsing. It now returns a successful authentication ticket for a valid token and `NoResult` for an absent token. Normal JWT bearer validation remains the default authentication scheme.
 3. Menu/action authority is represented by `menu.menu_actions` and `rolemenu.menu_actions_authority`. The bundled SQLite copy was missing `menu_actions`, so role-menu queries could fail with `operation_failed`; the repair script now adds it with `[]` as the safe default.
 4. The SQLite snapshot also drifted from the EF model: `spu.bar_code` was required but absent from the model, and `sku.bar_code` was required by the model but absent from SQLite. Both are now represented in the models and repaired additively by `ensure-sqlite-schema.sh`.
-5. Action authority is currently delivered as data to the client; there are no backend attributes enforcing individual menu-action names. This is an identified follow-up boundary, not silently treated as server-side authorization.
+5. The SQLite snapshot could also omit the four statistics menu rows even though the Vue routes and API controllers existed. The repair script now restores those entries and administrator export authorities additively.
+6. Action authority is now enforced for the mapped CRUD/import/reset-password/delete paths by `WmsActionAuthorizationFilter`; workflow-specific aliases remain an explicit certification boundary.
 
 ## `operation_failed` diagnostic map
 
 - SQL/schema failure: inspect the latest NLog file, run `./ModernWMS/Database/ensure-sqlite-schema.sh`, then retry the endpoint.
 - Authentication failure: expect HTTP 401 after the base authorization fix; verify the bearer token and `/login` result.
-- Authorization failure: expect HTTP 403 when an authenticated policy denies access. Individual menu actions are not yet server-enforced.
+- Authorization failure: expect HTTP 403 when an authenticated policy denies access. Mapped menu actions are server-enforced; workflow-specific aliases remain a certification boundary.
 - Service-level failure: inspect the endpoint service return path; several inventory and dispatch operations intentionally translate failed writes into `operation_failed`.
 
 ## Smoke-test plan
@@ -80,6 +81,14 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - User management was verified with isolated fixtures: create, read, update,
   password reset, delete, and import/read/delete all succeeded. The imported
   record was removed by its exact id after verification.
+- The statistics menu reconciliation restores the four official statistics
+  entries when an older SQLite snapshot is missing them. Under Colima, all four
+  routes loaded and produced browser downloads: safety stock, receipt details,
+  shipment statistics, and stock-age analysis.
+- An isolated ASN fixture passed confirm, confirm-cancel, and exact deletion.
+- Commodity QR and barcode preview dialogs rendered successfully. The SPU
+  service now reads and persists the parent barcode instead of silently
+  discarding it during edits.
 - Approval workflow model/service code is present, but no controller, frontend
   API module, or routed UI exposes it in this fork. The fork now exposes
   tenant-scoped flow-definition configuration and map endpoints, and an
