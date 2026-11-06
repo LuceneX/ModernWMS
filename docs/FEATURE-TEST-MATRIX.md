@@ -29,16 +29,16 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Print solutions | save, delete, export | PARTIAL |
 | Warehouse settings | warehouse/area/location save, delete, import, export, barcode/QR print | PASS for warehouse/area/location create |
 | Cargo owners | save, delete, import, export | PASS for create |
-| Freight settings | save, delete, import, export | PARTIAL |
-| Customers | save, delete, import, export | PARTIAL |
+| Freight settings | save, delete, import, export | PASS for create and dispatch-rate use |
+| Customers | save, delete, import, export | PASS for create and dispatch use |
 | Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway |
 | Stock management | stock/location reads, stock export | PASS for read path and putaway-generated stock; export remains PARTIAL |
 | Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PARTIAL |
-| Warehouse moves | save, delete, export, confirm | PARTIAL |
-| Warehouse freeze | freeze, unfreeze, export | PARTIAL |
-| Warehouse adjustment | export and adjustment workflow | PARTIAL |
+| Warehouse moves | save, delete, export, confirm | PASS for create → confirm; destination merge regression covered |
+| Warehouse freeze | freeze, unfreeze, export | PASS for freeze → unfreeze |
+| Warehouse adjustment | export and adjustment workflow | PASS for create → confirm; controller contract repaired |
 | Stocktaking | save, delete, export, confirm operation, confirm adjustment | PASS for create → count confirm → adjustment confirm |
-| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PARTIAL |
+| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign |
 | Statistics | ASN, delivery, stock-age, safety-stock exports | PARTIAL |
 | Visual warehouse | spatial/3D view | BLOCKED — requires a warehouse fixture and localization audit |
 
@@ -73,6 +73,16 @@ remain available for continued manual testing:
   and putaway.
 - a stocktaking record for the generated stock, successfully advanced through
   count confirmation and adjustment confirmation.
+- destination location `QA-STAGE-02`, customer `Codex QA Customer`, and freight
+  rate `Codex QA Carrier` were added for outbound testing.
+- a QA stock movement was created and confirmed, then a freeze and unfreeze were
+  applied successfully.
+- a manual stock adjustment was created and confirmed; its generated job number
+  and stock increase were verified in SQLite.
+- dispatch `20261106-0001` was created and advanced through pick confirmation,
+  packaging, weighing, delivery, freight assignment, and customer signature.
+- a second QA movement into an occupied destination was confirmed and verified
+  to merge into the existing stock row instead of creating a duplicate.
 
 The write path returned `isSuccess: true` at every step. These are test records,
 not production data; retain or remove them deliberately when testing locally.
@@ -82,10 +92,9 @@ not production data; retain or remove them deliberately when testing locally.
 - The original SQLite snapshot had all 19 admin menu rows but empty action
   authority arrays. The repair script now restores the built-in admin action
   set from the frontend registry. A fresh login is required after restart.
-- A generic `/dispatchlist/list` request with only page parameters returns an
-  application error because that endpoint expects a workflow-specific query.
-  The dashboard uses `/dispatchlist/advanced-list` through the existing API
-  wrapper; that route still needs a fixture-backed test.
+- The dispatch workflow is now fixture-backed through customer creation,
+  allocation, picking, packaging, weighing, delivery, freight, and signature.
+  Cancellation, import/export, and QR/print paths remain untested.
 - The frontend dependency tree reports 54 npm audit findings during the
   container build, including 2 critical findings. They are inherited legacy
   dependencies and are not silently suppressed.
