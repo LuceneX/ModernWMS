@@ -33,7 +33,7 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Customers | save, delete, import, export | PASS for create and dispatch use |
 | Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway; isolated confirm → cancel → delete and export verified |
 | Stock management | stock/location reads, stock export | PASS for read path, putaway-generated stock, and browser export |
-| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for fixture create → process-confirm → adjustment-confirm and browser export; split/group/delete remain PARTIAL |
+| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for isolated split create → process-confirm → adjustment-confirm, existing group/combined jobs, unprocessed delete, and browser export |
 | Warehouse moves | save, delete, export, confirm | PASS for create → confirm; destination merge regression covered |
 | Warehouse freeze | freeze, unfreeze, export | PASS for freeze → unfreeze |
 | Warehouse adjustment | export and adjustment workflow | PASS for create → confirm; controller contract repaired |
@@ -114,6 +114,12 @@ remain available for continued manual testing:
 - an isolated commodity `CODEX-DELETE-20261106` was created with one SKU,
   edited successfully, exported, and deleted through the browser confirmation
   flow; the list returned to the original QA record.
+- warehouse processing was exercised with an isolated split fixture: source and
+  target rows were selected, quantity and target location were entered, the
+  job was submitted, process confirmation and adjustment confirmation both
+  returned success, and a second unprocessed split fixture was deleted through
+  the confirmation flow. Existing combined-processing fixtures remain as
+  evidence of the group branch.
 - approval-flow configuration was exercised with an isolated two-node tenant
   fixture. Create, nested map traversal, list, exact delete, and post-delete
   not-found verification all passed. The flow-tree recursion defect and the

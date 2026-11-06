@@ -97,6 +97,11 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - Browser exports were verified for company settings, roles, users, stock,
   warehouse processing, warehouse moves, delivery, categories, suppliers,
   warehouse settings, cargo owners, freight settings, and customers.
+- Warehouse processing was verified in the browser with an isolated split
+  fixture: submit, process confirmation, adjustment confirmation, and delete
+  of a separate unprocessed fixture all returned success. The service delete
+  path now returns a localized not-found result when the requested job is
+  missing or already processed instead of passing a null entity to EF.
 - Approval workflow model/service code is present, but no controller, frontend
   API module, or routed UI exposes it in this fork. The fork now exposes
   tenant-scoped flow-definition configuration and map endpoints, and an

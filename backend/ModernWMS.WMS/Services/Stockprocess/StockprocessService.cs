@@ -340,6 +340,10 @@ namespace ModernWMS.WMS.Services
         public async Task<(bool flag, string msg)> DeleteAsync(int id)
         {
             var entity = await _dBContext.GetDbSet<StockprocessEntity>().Where(t => t.id.Equals(id) && t.process_status == false).Include(e => e.detailList).FirstOrDefaultAsync();
+            if (entity == null)
+            {
+                return (false, _stringLocalizer["not_exists_entity"]);
+            }
             _dBContext.GetDbSet<StockprocessEntity>().Remove(entity);
             var qty = await _dBContext.SaveChangesAsync();
             if (qty > 0)
