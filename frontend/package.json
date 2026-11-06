@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "build:cloudflare": "vue-tsc && vite build --mode cloudflare",
-    "preview": "vite preview"
+    "build:cloudflare": "vue-tsc && vite build --mode cloudflare && node ../scripts/prepare-cloudflare-assets.mjs",
+    "preview": "vite preview",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy"
   },
   "dependencies": {
     "@claviska/jquery-minicolors": "2.3.6",

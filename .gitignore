@@ -387,3 +387,7 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Cloudflare local state and generated static staging output
+.wrangler/
+frontend/cloudflare-dist/

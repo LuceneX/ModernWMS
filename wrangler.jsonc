@@ -1,0 +1,58 @@
+{
+  "name": "modernwms",
+  "main": "workers/index.ts",
+  "compatibility_date": "2026-11-06",
+  "compatibility_flags": ["nodejs_compat"],
+  "account_id": "ddf8c862579498d0527554a642ecf8a2",
+
+  "assets": {
+    "directory": "./frontend/cloudflare-dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+
+  "containers": [
+    {
+      "class_name": "ModernWMSContainer",
+      "image": "./docker/backend.Dockerfile",
+      "image_build_context": ".",
+      "max_instances": 1
+    }
+  ],
+
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MODERNWMS_CONTAINER",
+        "class_name": "ModernWMSContainer"
+      }
+    ]
+  },
+
+  "r2_buckets": [
+    {
+      "binding": "UNITY_ASSETS",
+      "bucket_name": "modernwms-unity"
+    }
+  ],
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["ModernWMSContainer"]
+    }
+  ],
+
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 0.1
+    }
+  }
+}
