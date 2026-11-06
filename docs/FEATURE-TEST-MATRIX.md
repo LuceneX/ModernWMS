@@ -26,7 +26,7 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Commodity categories | save, delete, export | PASS for create |
 | Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for isolated create → edit → export → delete, QR preview, and barcode preview |
 | Suppliers | save, delete, import, export | PASS for create |
-| Print solutions | save, delete, export | PASS for restored menu access and isolated create → read → update → get-by-path → delete; export output capture remains PARTIAL |
+| Print solutions | save, delete, export | PASS for restored menu access, isolated create → read → update → get-by-path → browser XLSX export → delete |
 | Warehouse settings | warehouse/area/location save, delete, import, export, barcode/QR print | PASS for warehouse/area/location create |
 | Cargo owners | save, delete, import, export | PASS for create |
 | Freight settings | save, delete, import, export | PASS for create and dispatch-rate use |
@@ -121,9 +121,9 @@ remain available for continued manual testing:
   the confirmation flow. Existing combined-processing fixtures remain as
   evidence of the group branch.
 - print-solution management was restored to the legacy database menu. An
-  isolated solution loaded in the browser and was deleted through the
-  confirmation flow; the XLSX export control was invoked, but this run did not
-  capture a downloaded artifact, so export remains explicitly partial.
+  isolated solution loaded in the browser, produced `/Users/ernissmal/Downloads/Print Settings.xlsx`,
+  was validated as an Excel 2007+ archive, and was then removed from the
+  container database.
 - approval-flow configuration was exercised with an isolated two-node tenant
   fixture. Create, nested map traversal, list, exact delete, and post-delete
   not-found verification all passed. The flow-tree recursion defect and the

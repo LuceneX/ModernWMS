@@ -105,8 +105,9 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - The legacy SQLite snapshot did not expose the documented print-solution
   screen even though its controller and Vue view existed. The reconciliation
   script now restores the `print` menu and administrator save/delete/export
-  authorities. Browser CRUD and the export control were exercised; an output
-  file was not captured in this run, so the export row remains partial.
+  authorities. Browser CRUD and export were exercised with an isolated
+  solution; the generated `Print Settings.xlsx` was captured and validated as
+  an Excel 2007+ archive before the fixture was removed.
 - Approval workflow model/service code is present, but no controller, frontend
   API module, or routed UI exposes it in this fork. The fork now exposes
   tenant-scoped flow-definition configuration and map endpoints, and an
