@@ -779,6 +779,7 @@ namespace ModernWMS.WMS.Services
                             dp.create_time,
                             dpp.goods_owner_id,
                             go.goods_owner_name,
+                            sku_price = sku.price
                         }
                         into dg
                         select new DeliveryStatisticViewModel
@@ -798,7 +799,9 @@ namespace ModernWMS.WMS.Services
                             delivery_date = dg.Key.create_time,
                             goods_owner_name = dg.Key.goods_owner_name,
                             delivery_qty = dg.Sum(t => t.dpp.picked_qty),
-                            delivery_amount = dg.Sum(t => t.dpp.picked_qty * t.sku.price)
+                            // SQLite cannot translate SUM(decimal). Sum the integer
+                            // quantity and multiply by the grouped SKU price instead.
+                            delivery_amount = dg.Sum(t => t.dpp.picked_qty) * dg.Key.sku_price
                         };
             int totals = await query.CountAsync();
             var list = await query.OrderByDescending(t => t.delivery_date)
@@ -815,7 +818,6 @@ namespace ModernWMS.WMS.Services
         /// <returns></returns>
         public async Task<(List<StockAgeViewModel> data, int totals)> StockAgePageAsync(StockAgeSearchViewModel input, CurrentUser currentUser)
         {
-            var database_config = Configuration.GetSection("Database")["db"].ToUpper();
             var DbSet = _dBContext.GetDbSet<StockEntity>().Where(t => t.tenant_id.Equals(currentUser.tenant_id));
             var sku_DBSet = _dBContext.GetDbSet<SkuEntity>().AsNoTracking();
             var spu_DBSet = _dBContext.GetDbSet<SpuEntity>().AsNoTracking();
@@ -847,14 +849,14 @@ namespace ModernWMS.WMS.Services
                                         qty = sg.Sum(t => t.stock.qty)
                                     };
             var today = DateTime.Today;
-            var query = from sg in stock_group_datas
+            var baseQuery = from sg in stock_group_datas
                         join sku in sku_DBSet on sg.sku_id equals sku.id
                         join spu in spu_DBSet on sku.spu_id equals spu.id
                         join gl in location_DBSet on sg.goods_location_id equals gl.id
                         where spu.spu_name.Contains(input.spu_name) && sku.sku_name.Contains(input.sku_name)
                         && sku.sku_code.Contains(input.sku_code) && spu.spu_code.Contains(input.spu_code)
                         && gl.warehouse_name.Contains(input.warehouse_name)
-                        select new StockAgeViewModel
+                        select new
                         {
                             sku_id = sg.sku_id,
                             goods_owner_name = sg.goods_owner_name,
@@ -868,24 +870,43 @@ namespace ModernWMS.WMS.Services
                             series_number = sg.series_number,
                             expiry_date = sg.expiry_date,
                             price = sg.price,
-                            putaway_date = sg.putaway_date,
-                            stock_age = sg.putaway_date == UtilConvert.MinDate ? 0 : database_config == "MYSQL" ? Microsoft.EntityFrameworkCore.MySqlDbFunctionsExtensions.DateDiffDay(EF.Functions, sg.putaway_date.Date, today) : Microsoft.EntityFrameworkCore.SqlServerDbFunctionsExtensions.DateDiffDay(EF.Functions, sg.putaway_date.Date, today),
+                            putaway_date = sg.putaway_date
                         };
 
+            // DateDiffDay is provider-specific and fails on SQLite when the
+            // grouped query switches to client evaluation. Materialize the
+            // already-filtered stock rows, then calculate age consistently.
+            var rows = await baseQuery.ToListAsync();
+            var filtered = rows.Select(t => new StockAgeViewModel
+            {
+                sku_id = t.sku_id,
+                goods_owner_name = t.goods_owner_name,
+                spu_name = t.spu_name,
+                spu_code = t.spu_code,
+                sku_code = t.sku_code,
+                sku_name = t.sku_name,
+                qty = t.qty,
+                location_name = t.location_name,
+                warehouse_name = t.warehouse_name,
+                series_number = t.series_number,
+                expiry_date = t.expiry_date,
+                price = t.price,
+                putaway_date = t.putaway_date,
+                stock_age = t.putaway_date == UtilConvert.MinDate ? 0 : Math.Max(0, (today - t.putaway_date.Date).Days)
+            }).Where(t => t.qty > 0);
             if (input.stock_age_from > 0)
             {
-                query = query.Where(t => t.stock_age >= input.stock_age_from);
+                filtered = filtered.Where(t => t.stock_age >= input.stock_age_from);
             }
             if (input.stock_age_to > 0)
             {
-                query = query.Where(t => t.stock_age <= input.stock_age_to);
+                filtered = filtered.Where(t => t.stock_age <= input.stock_age_to);
             }
-            query = query.Where(t => t.qty > 0);
-            int totals = await query.CountAsync();
-            var list = await query.OrderBy(t => t.sku_code)
-                       .Skip((input.pageIndex - 1) * input.pageSize)
+            var ordered = filtered.OrderBy(t => t.sku_code);
+            int totals = ordered.Count();
+            var list = ordered.Skip((input.pageIndex - 1) * input.pageSize)
                        .Take(input.pageSize)
-                       .ToListAsync();
+                       .ToList();
             return (list, totals);
         }
 

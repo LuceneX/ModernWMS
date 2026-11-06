@@ -66,3 +66,15 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - Warehouse processing was verified after rebuilding the backend: a fixture created with `process_status=false` passed process confirmation and adjustment confirmation, and SQLite showed the expected source/destination stock quantities. The service identity predicate was corrected so expiry, price, putaway, and series number are matched against their own columns.
 - The frontend production build passed and includes QR, barcode, export, and print components. Browser testing rendered a QR image, invoked the print surface, and downloaded an XLSX export from warehouse processing. Physical printer output was not claimed because no printer was attached.
 - Visual-warehouse behavior was tested from the sidebar. The Unity iframe originally rendered at 4px high; the frontend now gives it a full viewport-height container and the LuceneX warehouse scene/KPI panel loads. The Unity binary remains a separate localization boundary; labels embedded in that asset are not controlled by Vue i18n.
+- Delivery statistics and stock-age statistics were rebuilt and exercised after
+  reproducing SQLite `operation_failed` responses. Delivery totals now sum the
+  integer quantity and multiply by the grouped SKU price, avoiding SQLite's
+  unsupported decimal aggregate. Stock age is calculated after materializing
+  the filtered rows, avoiding SQL Server-only `DateDiffDay`; both endpoints
+  now return successful populated responses under Colima.
+- User management was verified with isolated fixtures: create, read, update,
+  password reset, delete, and import/read/delete all succeeded. The imported
+  record was removed by its exact id after verification.
+- Approval workflow model/service code is present, but no controller, frontend
+  API module, or routed UI exposes it in this fork. It remains an explicitly
+  unavailable feature rather than an untested passing feature.
