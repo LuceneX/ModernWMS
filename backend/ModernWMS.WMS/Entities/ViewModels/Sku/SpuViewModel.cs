@@ -69,6 +69,15 @@ namespace ModernWMS.WMS.Entities.ViewModels
         public string spu_description { get; set; } = string.Empty;
 
         /// <summary>
+        /// optional product barcode; retained because the SQLite schema
+        /// requires this column even when the barcode is stored on the SKU
+        /// detail instead
+        /// </summary>
+        [Display(Name = "bar_code")]
+        [MaxLength(64, ErrorMessage = "MaxLength")]
+        public string bar_code { get; set; } = string.Empty;
+
+        /// <summary>
         /// supplier_id
         /// </summary>
         [Display(Name = "supplier_id")]

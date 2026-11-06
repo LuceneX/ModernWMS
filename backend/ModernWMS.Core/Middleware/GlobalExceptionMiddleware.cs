@@ -75,7 +75,11 @@ namespace ModernWMS.Core.Middleware
                 {
                     ip = context.Connection.RemoteIpAddress.ToString();
                 }
-                logger.LogError($"\r\n\r\nIP:{ip},Exception：{e.Message}\r\nStackTrace：{e.StackTrace}");
+                // Keep the client response generic, but preserve the complete
+                // exception chain in the server log. The previous log omitted
+                // inner database exceptions, making operation_failed failures
+                // impossible to diagnose from a container.
+                logger.LogError($"\r\n\r\nIP:{ip},Exception：{e}");
 
                 string result = Utility.JsonHelper.SerializeObject(ResultModel<object>.Error(_stringLocalizer["operation_failed"]));
                 await context.Response.WriteAsync(result).ConfigureAwait(false);

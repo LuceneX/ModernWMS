@@ -8,6 +8,7 @@ export interface CommodityVO extends UniformFileNaming {
   category_id?: number
   category_name?: string
   spu_description: string
+  bar_code?: string
   supplier_id?: number
   supplier_name?: string
   brand: string

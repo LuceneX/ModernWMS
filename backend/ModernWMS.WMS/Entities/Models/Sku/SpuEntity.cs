@@ -41,6 +41,11 @@ namespace ModernWMS.WMS.Entities.Models
         public string spu_description { get; set; } = string.Empty;
 
         /// <summary>
+        /// legacy product barcode kept for SQLite schema compatibility
+        /// </summary>
+        public string bar_code { get; set; } = string.Empty;
+
+        /// <summary>
         /// supplier_id
         /// </summary>
         public int supplier_id { get; set; } = 0;

@@ -125,6 +125,8 @@ SQL
 
 add_column rolemenu menu_actions_authority "TEXT NOT NULL DEFAULT '[]'"
 add_column menu menu_actions "TEXT NOT NULL DEFAULT '[]'"
+add_column spu bar_code "TEXT NOT NULL DEFAULT ''"
+add_column sku bar_code "TEXT NOT NULL DEFAULT ''"
 add_column asn asnmaster_id "INTEGER NOT NULL DEFAULT 0"
 add_column asn arrival_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
 add_column asn unload_time "TEXT NOT NULL DEFAULT '0001-01-01 00:00:00'"
