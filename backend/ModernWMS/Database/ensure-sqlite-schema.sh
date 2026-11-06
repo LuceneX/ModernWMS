@@ -212,13 +212,20 @@ FROM "user" u
 WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'stockageStatistic' AND m.tenant_id = u.tenant_id)
 GROUP BY tenant_id;
 
+INSERT INTO menu
+  (menu_name, module, vue_path, vue_path_detail, vue_directory, sort, tenant_id, menu_actions)
+SELECT 'print', 'baseModule', 'print', '', 'base/print', 12, tenant_id, '[]'
+FROM "user" u
+WHERE NOT EXISTS (SELECT 1 FROM menu m WHERE m.vue_path = 'print' AND m.tenant_id = u.tenant_id)
+GROUP BY tenant_id;
+
 INSERT INTO rolemenu
   (userrole_id, menu_id, authority, create_time, last_update_time, tenant_id, menu_actions_authority)
 SELECT r.id, m.id, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, m.tenant_id, '["export"]'
 FROM userrole r
 JOIN menu m ON m.tenant_id = r.tenant_id
 WHERE r.role_name = 'admin'
-  AND m.menu_name IN ('saftyStock', 'asnStatistic', 'deliveryStatistic', 'stockageStatistic')
+  AND m.menu_name IN ('saftyStock', 'asnStatistic', 'deliveryStatistic', 'stockageStatistic', 'print')
   AND NOT EXISTS (
     SELECT 1 FROM rolemenu existing
     WHERE existing.userrole_id = r.id AND existing.menu_id = m.id AND existing.tenant_id = m.tenant_id

@@ -102,6 +102,11 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
   of a separate unprocessed fixture all returned success. The service delete
   path now returns a localized not-found result when the requested job is
   missing or already processed instead of passing a null entity to EF.
+- The legacy SQLite snapshot did not expose the documented print-solution
+  screen even though its controller and Vue view existed. The reconciliation
+  script now restores the `print` menu and administrator save/delete/export
+  authorities. Browser CRUD and the export control were exercised; an output
+  file was not captured in this run, so the export row remains partial.
 - Approval workflow model/service code is present, but no controller, frontend
   API module, or routed UI exposes it in this fork. The fork now exposes
   tenant-scoped flow-definition configuration and map endpoints, and an
