@@ -563,8 +563,18 @@ namespace ModernWMS.WMS.Services
             if (qty > 0)
             {
                 decimal dec = ChangeLengthUnit(entity.length_unit, entity.volume_unit);
-                await _dBContext.GetDbSet<SkuEntity>().Where(t => t.spu_id.Equals(entity.id))
-                    .ExecuteUpdateAsync(p => p.SetProperty(x => x.volume, x => Math.Round(x.lenght * dec * x.width * dec * x.height * dec, 3)));
+                // Do this calculation in managed code. The previous bulk
+                // expression relied on provider-specific translation of
+                // Math.Round and caused SQLite edits to surface as the
+                // generic operation_failed response.
+                var skus = await _dBContext.GetDbSet<SkuEntity>()
+                    .Where(t => t.spu_id.Equals(entity.id))
+                    .ToListAsync();
+                foreach (var sku in skus)
+                {
+                    sku.volume = Math.Round(sku.lenght * dec * sku.width * dec * sku.height * dec, 3);
+                }
+                await _dBContext.SaveChangesAsync();
                 return (true, _stringLocalizer["save_success"]);
             }
             else

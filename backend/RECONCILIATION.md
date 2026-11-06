@@ -89,6 +89,14 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - Commodity QR and barcode preview dialogs rendered successfully. The SPU
   service now reads and persists the parent barcode instead of silently
   discarding it during edits.
+- Commodity editing initially reproduced `operation_failed` after the parent
+  fields were saved. The SQLite-incompatible bulk `Math.Round` update was
+  replaced with a provider-neutral materialized update; browser edit and
+  reopen now persist the changed description. An isolated commodity was also
+  created and deleted through the confirmation flow.
+- Browser exports were verified for company settings, roles, users, stock,
+  warehouse processing, warehouse moves, delivery, categories, suppliers,
+  warehouse settings, cargo owners, freight settings, and customers.
 - Approval workflow model/service code is present, but no controller, frontend
   API module, or routed UI exposes it in this fork. The fork now exposes
   tenant-scoped flow-definition configuration and map endpoints, and an

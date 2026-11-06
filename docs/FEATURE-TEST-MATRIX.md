@@ -19,12 +19,12 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 
 | Area | Implemented functions | Current status |
 | --- | --- | --- |
-| Company settings | save, delete, export | PASS for create → read → update → delete; export remains PARTIAL |
-| User roles | save, delete, export | PASS for create → read → update → delete; export remains PARTIAL |
+| Company settings | save, delete, export | PASS for create → read → update → delete and browser export |
+| User roles | save, delete, export | PASS for create → read → update → delete and browser export |
 | Role-menu permissions | assign menus and action authorities | PASS for create → read → update → authority readback → delete |
-| User management | save, delete, import, export, reset password | PASS for create → read → update → reset password → delete and isolated import/delete; export remains PARTIAL |
+| User management | save, delete, import, export, reset password | PASS for create → read → update → reset password → delete, isolated import/delete, and browser export |
 | Commodity categories | save, delete, export | PASS for create |
-| Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for create, QR preview, and barcode preview; edit/delete/export remain PARTIAL |
+| Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for isolated create → edit → export → delete, QR preview, and barcode preview |
 | Suppliers | save, delete, import, export | PASS for create |
 | Print solutions | save, delete, export | PASS for create → read → update → get-by-path → delete; export remains PARTIAL |
 | Warehouse settings | warehouse/area/location save, delete, import, export, barcode/QR print | PASS for warehouse/area/location create |
@@ -32,13 +32,13 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Freight settings | save, delete, import, export | PASS for create and dispatch-rate use |
 | Customers | save, delete, import, export | PASS for create and dispatch use |
 | Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway; isolated confirm → cancel → delete and export verified |
-| Stock management | stock/location reads, stock export | PASS for read path and putaway-generated stock; export remains PARTIAL |
-| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for fixture create → process-confirm → adjustment-confirm; split/group/delete/export remain PARTIAL |
+| Stock management | stock/location reads, stock export | PASS for read path, putaway-generated stock, and browser export |
+| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for fixture create → process-confirm → adjustment-confirm and browser export; split/group/delete remain PARTIAL |
 | Warehouse moves | save, delete, export, confirm | PASS for create → confirm; destination merge regression covered |
 | Warehouse freeze | freeze, unfreeze, export | PASS for freeze → unfreeze |
 | Warehouse adjustment | export and adjustment workflow | PASS for create → confirm; controller contract repaired |
 | Stocktaking | save, delete, export, confirm operation, confirm adjustment | PASS for create → count confirm → adjustment confirm |
-| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, and import/delete; export and QR/print remain PARTIAL |
+| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, import/delete, browser export, and QR preview |
 | Statistics | ASN, delivery, stock-age, safety-stock exports | PASS for all four menu routes and browser XLSX downloads |
 | Visual warehouse | spatial/3D view | PASS after iframe sizing fix; Unity scene and LuceneX warehouse KPI panel load. Latvian/Chinese Unity-internal labels still require a dedicated asset/localization pass |
 | Approval-flow configuration | flow definition, nested map, approvers, conditions | PASS for isolated create → map traversal → list → exact delete; transaction-specific approval execution remains PARTIAL |
@@ -104,6 +104,16 @@ remain available for continued manual testing:
   `Stock Age Analysis.xlsx`.
 - the commodity page rendered both a QR preview and a barcode preview for the
   QA SKU after the parent-SPU barcode update path was repaired.
+- after rebuilding the SQLite-safe commodity update path, the edit form
+  persisted `Local QA fixture updated` and showed the value after reopening.
+- browser export controls generated the following additional files: `Company
+  Information.xlsx`, `User Role.xlsx`, `User Management (1).xlsx`, `Stock
+  Location (1).xlsx`, `Warehouse Processing (1).xlsx`, `Inventory Move (2).xlsx`,
+  and `Invoice.xlsx`.
+- the delivery QR preview rendered a QR image for shipment `20261106-0003`.
+- an isolated commodity `CODEX-DELETE-20261106` was created with one SKU,
+  edited successfully, exported, and deleted through the browser confirmation
+  flow; the list returned to the original QA record.
 - approval-flow configuration was exercised with an isolated two-node tenant
   fixture. Create, nested map traversal, list, exact delete, and post-delete
   not-found verification all passed. The flow-tree recursion defect and the
@@ -148,8 +158,8 @@ not production data; retain or remove them deliberately when testing locally.
   set from the frontend registry. A fresh login is required after restart.
 - The dispatch workflow is now fixture-backed through customer creation,
   allocation, picking, packaging, weighing, delivery, freight, signature,
-  cancellation, and import/delete. Export and QR/print interaction still need
-  browser-level verification.
+  cancellation, import/delete, browser export, and QR preview. Physical print
+  output still needs a printer-backed verification.
 - QR preview, barcode preview, browser print invocation, and XLSX export were exercised from
   the warehouse-processing UI. Physical printer output is not claimed because
   no printer was attached to this local environment.
