@@ -22,7 +22,7 @@ namespace ModernWMS.WMS.Services
     /// <summary>
     /// FlowSet Service
     /// </summary>
-    public class FlowSetService : BaseService<FlowSetEntity>
+    public class FlowSetService : BaseService<FlowSetEntity>, IFlowSetService
     {
         #region Args
 
@@ -133,7 +133,11 @@ namespace ModernWMS.WMS.Services
             {
                 if (fsm.prev_node_guid == prev_node)
                 {
-                    var childNodes = BuildFlow(fsm_lsit, fsm.prev_node_guid);
+                    // Continue from this node, not from the same parent. The
+                    // previous implementation recursed with prev_node_guid
+                    // again and never advanced, causing approval-map requests
+                    // to recurse indefinitely whenever a root node existed.
+                    var childNodes = BuildFlow(fsm_lsit, fsm.node_guid);
                     fsm.children = childNodes;
                     flowNodes.Add(fsm);
                 }

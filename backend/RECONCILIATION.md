@@ -76,5 +76,14 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
   password reset, delete, and import/read/delete all succeeded. The imported
   record was removed by its exact id after verification.
 - Approval workflow model/service code is present, but no controller, frontend
-  API module, or routed UI exposes it in this fork. It remains an explicitly
-  unavailable feature rather than an untested passing feature.
+  API module, or routed UI exposes it in this fork. The fork now exposes
+  tenant-scoped flow-definition configuration and map endpoints, and an
+  isolated two-node create/map/list/delete test passes. Operation-specific
+  approval execution and decision screens remain unavailable in the upstream
+  schema and are documented as partial.
+- The approval flow builder previously recursed using the same parent node and
+  could loop indefinitely. It now advances using the current node GUID.
+- Authentication and tenant scoping are enforced server-side. Individual
+  `menu_actions_authority` codes are still only consumed by the client; a
+  backend action-policy layer is required before those fine-grained
+  permissions can be claimed as enforced.

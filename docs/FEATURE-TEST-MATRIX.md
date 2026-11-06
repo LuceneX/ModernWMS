@@ -41,6 +41,7 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 | Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, and import/delete; export and QR/print remain PARTIAL |
 | Statistics | ASN, delivery, stock-age, safety-stock exports | PASS for ASN, delivery, stock-age, and safety-stock list paths; browser export remains PARTIAL |
 | Visual warehouse | spatial/3D view | PASS after iframe sizing fix; Unity scene and LuceneX warehouse KPI panel load. Latvian/Chinese Unity-internal labels still require a dedicated asset/localization pass |
+| Approval-flow configuration | flow definition, nested map, approvers, conditions | PASS for isolated create → map traversal → list → exact delete; transaction-specific approval execution remains PARTIAL |
 
 ## Verified against Colima
 
@@ -95,6 +96,10 @@ remain available for continued manual testing:
   aggregation in SQLite and to calculate stock age after materialization; both
   endpoints now return populated successful responses from the rebuilt Colima
   container.
+- approval-flow configuration was exercised with an isolated two-node tenant
+  fixture. Create, nested map traversal, list, exact delete, and post-delete
+  not-found verification all passed. The flow-tree recursion defect and the
+  missing controller/request contract were corrected before this test.
 - warehouse processing jobs `20261106-0001` through `20261106-0003` were used
   for processing checks. A corrected fixture with `process_status=false`
   completed process confirmation and adjustment confirmation; SQLite verified
@@ -142,8 +147,14 @@ not production data; retain or remove them deliberately when testing locally.
   browser download assertion for every individual screen; API success alone
   does not prove a file was downloaded.
 - Approval workflow entities and a service exist in the backend, but this fork
-  currently has no approval controller, frontend API module, or routed UI. That
-  is an unavailable feature surface, not a passing workflow test.
+  now have tenant-scoped configuration endpoints and a frontend API module.
+  The actual operation-specific approval execution/decision screens are not
+  implemented in the upstream schema exposed by this fork, so that portion
+  remains PARTIAL rather than being represented as complete.
+- Individual menu action permissions are still client-side data; backend
+  endpoints enforce authentication and tenant scoping but do not yet enforce
+  each `menu_actions_authority` code. This is a security limitation requiring
+  a dedicated authorization policy pass.
 - The application targets .NET 7, which is out of mainstream support. This is
   a deployment/security risk and should be tracked separately from functional
   reconciliation.
