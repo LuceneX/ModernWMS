@@ -109,6 +109,11 @@ remain available for continued manual testing:
   isolated `picker` fixture: authenticated read access returned HTTP 200,
   while an unauthorized `POST /user` write returned HTTP 403. The fixture was
   deleted by the admin role afterward.
+- After the authorization reconciliation, administrator write-route probes for
+  role-menu administration, stock freeze/unfreeze, SKU safety-stock update,
+  and dispatch import all reached the controller (HTTP 200 with empty QA
+  payloads rather than HTTP 403). Stock-freeze and safety-stock had previously
+  been misclassified or omitted from the server-side action registry.
 - warehouse processing jobs `20261106-0001` through `20261106-0003` were used
   for processing checks. A corrected fixture with `process_status=false`
   completed process confirmation and adjustment confirmation; SQLite verified
@@ -165,6 +170,10 @@ not production data; retain or remove them deliberately when testing locally.
   remain authentication- and tenant-scoped. Transaction-specific workflow
   actions whose authority codes do not match CRUD conventions still require
   explicit aliases and must not be treated as fully certified until exercised.
+- The built-in administrator role is explicitly full-access, matching the
+  upstream product's administrative behavior. Custom roles remain constrained
+  by the action registry; role-menu and approval-flow configuration are
+  administrator-only because they modify the permission model itself.
 - The application targets .NET 7, which is out of mainstream support. This is
   a deployment/security risk and should be tracked separately from functional
   reconciliation.

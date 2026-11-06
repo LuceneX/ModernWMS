@@ -63,6 +63,11 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
 - The dispatch test used QA records only: `Codex QA Customer`, `QA-SKU-004`, `Codex QA Carrier`, and dispatch `20261106-0001`.
 - Dispatch cancellation and import/delete were verified with isolated QA orders. Cancellation returned the order to the cancelled state and removed its pick-list rows; import created a readable order and deletion removed the exact generated order.
 - Administration writes were verified with temporary company, role, and role-menu records. Company and role CRUD passed; role-menu create/update/delete and authority readback passed; print-solution CRUD and get-by-path passed.
+- The authorization registry was reconciled for stock-freeze add/update,
+  SKU safety-stock update, and dispatch import. Administrator probes reached
+  these controllers successfully, while custom-role writes remain protected by
+  action-code checks. Role-menu and approval-flow configuration are explicitly
+  administrator-only because they change the permission model.
 - Warehouse processing was verified after rebuilding the backend: a fixture created with `process_status=false` passed process confirmation and adjustment confirmation, and SQLite showed the expected source/destination stock quantities. The service identity predicate was corrected so expiry, price, putaway, and series number are matched against their own columns.
 - The frontend production build passed and includes QR, barcode, export, and print components. Browser testing rendered a QR image, invoked the print surface, and downloaded an XLSX export from warehouse processing. Physical printer output was not claimed because no printer was attached.
 - Visual-warehouse behavior was tested from the sidebar. The Unity iframe originally rendered at 4px high; the frontend now gives it a full viewport-height container and the LuceneX warehouse scene/KPI panel loads. The Unity binary remains a separate localization boundary; labels embedded in that asset are not controlled by Vue i18n.

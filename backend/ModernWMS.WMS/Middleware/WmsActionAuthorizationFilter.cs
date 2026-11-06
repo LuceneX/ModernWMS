@@ -88,6 +88,30 @@ public sealed class WmsActionAuthorizationFilter : IAsyncActionFilter
             return;
         }
 
+        if (controller.Equals("Rolemenu", StringComparison.OrdinalIgnoreCase))
+        {
+            // Role-menu administration changes the permission model itself.
+            // The upstream menu registry intentionally exposes no ordinary
+            // action code for it, so keep it administrator-only.
+            if (currentUser.userrole_id != 1)
+            {
+                context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
+                return;
+            }
+
+            await next();
+            return;
+        }
+
+        // The bundled administrator role is the product's break-glass role.
+        // Preserve that documented behavior explicitly; custom roles still
+        // go through the menu/action checks below.
+        if (currentUser.userrole_id == 1)
+        {
+            await next();
+            return;
+        }
+
         if (!MenuByController.TryGetValue(controller, out var menuCode))
         {
             // New controllers must opt into the registry before their write
@@ -197,6 +221,16 @@ public sealed class WmsActionAuthorizationFilter : IAsyncActionFilter
         if (controller.Equals("Stockadjust", StringComparison.OrdinalIgnoreCase) &&
             actionName.Equals("ConfirmAdjustment", StringComparison.OrdinalIgnoreCase))
             return "confirmAdjust";
+        if (controller.Equals("Stockfreeze", StringComparison.OrdinalIgnoreCase))
+        {
+            if (actionName.Equals("AddAsync", StringComparison.OrdinalIgnoreCase))
+                return "freeze";
+            if (actionName.Equals("UpdateAsync", StringComparison.OrdinalIgnoreCase))
+                return "unfreeze";
+        }
+        if (controller.Equals("Spu", StringComparison.OrdinalIgnoreCase) &&
+            actionName.Equals("InsertOrUpdateSkuSafetyStockAsync", StringComparison.OrdinalIgnoreCase))
+            return "saftyStock";
 
         if (controller.Equals("Asn", StringComparison.OrdinalIgnoreCase))
         {
@@ -246,6 +280,8 @@ public sealed class WmsActionAuthorizationFilter : IAsyncActionFilter
                 return "invoice-save";
             if (actionName.Equals("DeleteAsync", StringComparison.OrdinalIgnoreCase))
                 return "invoice-delete";
+            if (actionName.Equals("Import", StringComparison.OrdinalIgnoreCase))
+                return "invoice-save";
         }
 
         if (actionName.Equals("ExcelAsync", StringComparison.OrdinalIgnoreCase) ||
