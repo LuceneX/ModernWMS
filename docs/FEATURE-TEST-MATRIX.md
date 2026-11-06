@@ -100,6 +100,15 @@ remain available for continued manual testing:
   fixture. Create, nested map traversal, list, exact delete, and post-delete
   not-found verification all passed. The flow-tree recursion defect and the
   missing controller/request contract were corrected before this test.
+- After the server-side authorization filter was deployed, approval
+  configuration was re-exercised with an approver: admin create, nested map
+  traversal showing the approver, and exact delete all returned success. The
+  controller now sets the EF child relationship explicitly when persisting
+  approvers.
+- Server-side action authorization was exercised against Colima with an
+  isolated `picker` fixture: authenticated read access returned HTTP 200,
+  while an unauthorized `POST /user` write returned HTTP 403. The fixture was
+  deleted by the admin role afterward.
 - warehouse processing jobs `20261106-0001` through `20261106-0003` were used
   for processing checks. A corrected fixture with `process_status=false`
   completed process confirmation and adjustment confirmation; SQLite verified

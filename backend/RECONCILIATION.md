@@ -83,6 +83,10 @@ Controller route methods should be enumerated from `[Route]`, `[HttpGet]`, `[Htt
   schema and are documented as partial.
 - The approval flow builder previously recursed using the same parent node and
   could loop indefinitely. It now advances using the current node GUID.
+- Approval approver persistence now assigns the `FlowSetUserEntity.FlowSet`
+  navigation explicitly. Without that relationship, SQLite flow creation
+  returned `operation_failed` when an approver was included; the fix was
+  rebuilt and verified with an admin create → map → delete fixture.
 - Authentication and tenant scoping are enforced server-side. The global
   `WmsActionAuthorizationFilter` now enforces mapped CRUD/import/reset-password
   and delete action codes for authenticated roles. Read-only paths remain

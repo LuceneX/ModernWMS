@@ -100,6 +100,7 @@ public class FlowSetController : BaseController
             {
                 await _db.Set<FlowSetUserEntity>().AddAsync(new FlowSetUserEntity
                 {
+                    FlowSet = savedNode,
                     flowset_id = savedNode.id,
                     flowsetmain_id = main.id,
                     node_guid = savedNode.node_guid,
