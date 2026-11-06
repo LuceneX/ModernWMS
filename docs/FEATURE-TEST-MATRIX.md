@@ -19,28 +19,28 @@ Official baseline: [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS)
 
 | Area | Implemented functions | Current status |
 | --- | --- | --- |
-| Company settings | save, delete, export | PARTIAL |
-| User roles | save, delete, export | PARTIAL |
-| Role-menu permissions | assign menus and action authorities | PARTIAL — admin action seed repaired; UI write test pending |
+| Company settings | save, delete, export | PASS for create → read → update → delete; export remains PARTIAL |
+| User roles | save, delete, export | PASS for create → read → update → delete; export remains PARTIAL |
+| Role-menu permissions | assign menus and action authorities | PASS for create → read → update → authority readback → delete |
 | User management | save, delete, import, export, reset password | PARTIAL |
 | Commodity categories | save, delete, export | PASS for create |
 | Commodity/SKU management | save, delete, export, safety stock, QR print, barcode print | PASS for create; remaining actions PARTIAL |
 | Suppliers | save, delete, import, export | PASS for create |
-| Print solutions | save, delete, export | PARTIAL |
+| Print solutions | save, delete, export | PASS for create → read → update → get-by-path → delete; export remains PARTIAL |
 | Warehouse settings | warehouse/area/location save, delete, import, export, barcode/QR print | PASS for warehouse/area/location create |
 | Cargo owners | save, delete, import, export | PASS for create |
 | Freight settings | save, delete, import, export | PASS for create and dispatch-rate use |
 | Customers | save, delete, import, export | PASS for create and dispatch use |
 | Receiving/ASN | notice save/delete/export/QR; arrival, unload, sort, putaway, confirm/cancel, export | PASS for create → arrival → unload → sort → putaway |
 | Stock management | stock/location reads, stock export | PASS for read path and putaway-generated stock; export remains PARTIAL |
-| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PARTIAL |
+| Warehouse processing | split, group, confirm operation, confirm adjustment, delete, export | PASS for fixture create → process-confirm → adjustment-confirm; split/group/delete/export remain PARTIAL |
 | Warehouse moves | save, delete, export, confirm | PASS for create → confirm; destination merge regression covered |
 | Warehouse freeze | freeze, unfreeze, export | PASS for freeze → unfreeze |
 | Warehouse adjustment | export and adjustment workflow | PASS for create → confirm; controller contract repaired |
 | Stocktaking | save, delete, export, confirm operation, confirm adjustment | PASS for create → count confirm → adjustment confirm |
-| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign |
+| Delivery/shipping | invoice save/confirm/revoke/delete/export/QR; pick, pack, weigh, deliver, carrier, sign-in and exports | PASS for dispatch → pick → pack → weigh → deliver → freight → sign, cancellation, and import/delete; export and QR/print remain PARTIAL |
 | Statistics | ASN, delivery, stock-age, safety-stock exports | PARTIAL |
-| Visual warehouse | spatial/3D view | BLOCKED — requires a warehouse fixture and localization audit |
+| Visual warehouse | spatial/3D view | PASS after iframe sizing fix; Unity scene and LuceneX warehouse KPI panel load. Latvian/Chinese Unity-internal labels still require a dedicated asset/localization pass |
 
 ## Verified against Colima
 
@@ -83,6 +83,25 @@ remain available for continued manual testing:
   packaging, weighing, delivery, freight assignment, and customer signature.
 - a second QA movement into an occupied destination was confirmed and verified
   to merge into the existing stock row instead of creating a duplicate.
+- dispatch cancellation was exercised for `20261106-0003`; the order returned to
+  the cancelled state and its pick-list rows were removed.
+- dispatch import was exercised with import group `902`; the created order was
+  read back by its generated number and then deleted by that exact number.
+- warehouse processing jobs `20261106-0001` through `20261106-0003` were used
+  for processing checks. A corrected fixture with `process_status=false`
+  completed process confirmation and adjustment confirmation; SQLite verified
+  the source quantity decreased and the destination quantity increased.
+- a temporary role-menu fixture was created, updated from one menu to another,
+  read back through both the role-menu and authority endpoints, and deleted.
+- temporary company and print-solution fixtures completed CRUD; the print
+  solution also passed the `get-by-path` lookup.
+- browser-level verification opened the processing QR dialog and visibly
+  rendered a QR image for `20261106-0003`; the print action invoked the browser
+  print surface and was dismissed after verification. The processing export
+  control produced `/Users/ernissmal/Downloads/Warehouse Processing.xlsx`.
+- the visual-warehouse route was opened from the sidebar. The Unity iframe was
+  initially only 4px high; after the CSS sizing fix it filled the 724px
+  workspace and the LuceneX warehouse scene/KPI panel loaded.
 
 The write path returned `isSuccess: true` at every step. These are test records,
 not production data; retain or remove them deliberately when testing locally.
@@ -93,8 +112,18 @@ not production data; retain or remove them deliberately when testing locally.
   authority arrays. The repair script now restores the built-in admin action
   set from the frontend registry. A fresh login is required after restart.
 - The dispatch workflow is now fixture-backed through customer creation,
-  allocation, picking, packaging, weighing, delivery, freight, and signature.
-  Cancellation, import/export, and QR/print paths remain untested.
+  allocation, picking, packaging, weighing, delivery, freight, signature,
+  cancellation, and import/delete. Export and QR/print interaction still need
+  browser-level verification.
+- QR preview, browser print invocation, and XLSX export were exercised from
+  the warehouse-processing UI. Physical printer output is not claimed because
+  no printer was attached to this local environment.
+- The processing service previously matched expiry, price, and putaway fields
+  against the series-number expression. That reproducible schema/identity bug
+  was corrected and the rebuilt container passed the fixture workflow.
+- The frontend contract requires new processing jobs to send
+  `process_status=false`; omitting it lets the backend default to true and
+  makes process confirmation report `status_changed`.
 - The frontend dependency tree reports 54 npm audit findings during the
   container build, including 2 critical findings. They are inherited legacy
   dependencies and are not silently suppressed.
@@ -112,6 +141,10 @@ not production data; retain or remove them deliberately when testing locally.
 - The host filesystem reached 99% usage and caused containerd failures. The
   obsolete Homebrew cache was cleaned; this is an environment prerequisite,
   not an application defect.
+- The visual warehouse is a Unity WebGL scene under `frontend/public/unity`.
+  Its iframe sizing is now fixed and the scene loads, but the embedded Unity
+  asset is not covered by the Vue i18n catalog. Any remaining Chinese labels
+  inside that binary asset require a Unity source/asset localization change.
 
 ## How to extend this matrix
 

@@ -33,11 +33,13 @@ const openedMenus = computed(() => store.getters['system/openedMenus'])
   .homeRight {
     width: calc(100% - @sideBarWidth);
     height: 100%;
+    min-height: 100vh;
     overflow: auto;
     background: #f5f3ef;
 
     .homeRouterContainer {
       min-height: 100%;
+      height: 100%;
       box-sizing: border-box;
     }
   }

@@ -133,7 +133,7 @@ router.beforeEach(async (to, from, next) => {
     return next()
   }
   if (to.path === '/vwms') {
-    next()
+    return next()
   }
   // dont have token, back login
   if (!store.getters['user/token']) {

@@ -29,7 +29,9 @@ export function menusToSideBar(): SideBarMenu[] {
 
   for (const menu of menuList) {
     // Get the module index and check whether this group exists
-    const moduleIndex = result.findIndex((item) => item.lable === i18n.global.t(`router.sideBar.${ menu.module }`))
+    const moduleIndex = menu.module
+      ? result.findIndex((item) => item.lable === i18n.global.t(`router.sideBar.${ menu.module }`))
+      : -1
     const lable = GetMenuNameAndModule(menu.vue_path)
     if (lable) {
       // Primary menu

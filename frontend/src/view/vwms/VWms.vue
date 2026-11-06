@@ -422,6 +422,7 @@ const startPostJson = () => {
   letter-spacing: 1px;
   width: 100%;
   height: 100%;
+  min-height: 100vh;
   overflow: hidden;
   position: relative;
   display: flex;
@@ -449,8 +450,10 @@ const startPostJson = () => {
 .VWMSIframe {
   width: 100%;
   height: 100%;
+  min-height: 100%;
   border: none;
   position: absolute;
+  inset: 0;
 }
 
 .right-container {
