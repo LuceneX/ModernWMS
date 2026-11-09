@@ -4,6 +4,15 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_SERVICE || 'http://127.0.0.1:5555',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api(?=\/|$)/, '') || '/'
+      }
+    }
+  },
   plugins: [
     vue()
   ],

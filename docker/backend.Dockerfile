@@ -18,8 +18,12 @@ RUN rm -rf /var/lib/apt/lists/* \
 WORKDIR /app
 COPY --from=build /out/ ./
 COPY backend/ModernWMS/Database/ensure-sqlite-schema.sh /app/ensure-sqlite-schema.sh
-RUN chmod +x /app/ensure-sqlite-schema.sh
+COPY backend/ModernWMS/Database/seed-sqlite.sql /app/seed-sqlite.sql
+COPY docker/start-backend.sh /app/start-backend.sh
+RUN chmod +x /app/ensure-sqlite-schema.sh /app/start-backend.sh
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:5555
+ENV WMS_DB_PATH=/data/wms.db
+VOLUME ["/data"]
 EXPOSE 5555
-ENTRYPOINT ["/bin/sh", "-c", "./ensure-sqlite-schema.sh /app/wms.db && exec dotnet ModernWMS.dll"]
+ENTRYPOINT ["/app/start-backend.sh"]

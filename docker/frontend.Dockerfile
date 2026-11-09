@@ -7,5 +7,7 @@ COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install --legacy-peer-deps
 COPY frontend/ ./
 
+ENV VITE_API_BASE_URL=/api
+ENV BACKEND_SERVICE=http://backend:5555
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
