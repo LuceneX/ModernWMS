@@ -1,6 +1,6 @@
-# ModernWMS — LuceneX fork
+# LuceneX Warehouse Management System
 
-ModernWMS is a warehouse management application with a Vue web interface, an ASP.NET Core API, and a local SQLite database. This repository is the LuceneX fork of [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS).
+LuceneX Warehouse Management System is a warehouse management application with a Vue web interface, an ASP.NET Core API, and a local SQLite database. It is based on [fjykTec/ModernWMS](https://github.com/fjykTec/ModernWMS).
 
 The instructions below run the current source directly on your computer. Docker is optional; no external database or Nginx server is needed for local development.
 
